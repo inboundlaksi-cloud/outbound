@@ -35,9 +35,13 @@
                     <label class="block text-gray-700 text-sm font-medium mb-2" for="email">อีเมล</label>
                     <input type="email" id="email" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="your@email.com">
                 </div>
-                <div class="mb-6">
+                <div class="mb-4">
                     <label class="block text-gray-700 text-sm font-medium mb-2" for="password">รหัสผ่าน</label>
                     <input type="password" id="password" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="••••••••">
+                </div>
+                <div class="mb-4 flex items-center">
+                    <input type="checkbox" id="remember-password" class="form-checkbox h-4 w-4 text-indigo-600">
+                    <label for="remember-password" class="ml-2 text-gray-700 text-sm">จำรหัสผ่าน</label>
                 </div>
                 <button id="login-btn" class="w-full bg-indigo-600 text-white font-bold py-3 px-4 rounded-lg shadow-md hover:bg-indigo-700 transition-colors">
                     เข้าสู่ระบบ
@@ -51,6 +55,10 @@
                 <div class="mb-4">
                     <label class="block text-gray-700 text-sm font-medium mb-2" for="reg-name">ชื่อ-นามสกุล</label>
                     <input type="text" id="reg-name" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="ชื่อ-นามสกุล">
+                </div>
+                <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-medium mb-2" for="reg-nickname">ชื่อเล่น</label>
+                    <input type="text" id="reg-nickname" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="ชื่อเล่น">
                 </div>
                 <div class="mb-4">
                     <label class="block text-gray-700 text-sm font-medium mb-2" for="reg-email">อีเมล</label>
@@ -91,15 +99,6 @@
                 <p class="text-gray-600 mt-2">คุณจะได้รับอีเมลแจ้งเมื่อบัญชีได้รับการอนุมัติ</p>
                 <button id="logout-btn" class="mt-6 text-indigo-600 hover:underline">ออกจากระบบ</button>
             </div>
-            
-            <div class="mt-8 text-center">
-                <button id="create-admin-btn" class="bg-red-500 text-white font-bold py-2 px-4 rounded hidden">
-                    <i class="fas fa-user-shield mr-2"></i> สร้างแอดมินคนแรก
-                </button>
-                <button id="auto-login-btn" class="bg-green-500 text-white font-bold py-2 px-4 rounded hidden ml-2">
-                    <i class="fas fa-sign-in-alt mr-2"></i> เข้าสู่ระบบอัตโนมัติ
-                </button>
-            </div>
         </div>
     </div>
 
@@ -117,10 +116,6 @@
                     <span id="user-role-display" class="text-indigo-600 font-bold text-base md:text-lg">บทบาท: ADMIN</span>
                 </div>
                 <div class="flex flex-col md:flex-row gap-4 w-full md:w-auto justify-end">
-                    <button id="ai-analysis-btn"
-                        class="bg-gradient-to-r from-purple-600 to-indigo-700 text-white font-bold text-sm md:text-lg py-3 px-4 md:px-6 rounded-lg shadow-lg hover:opacity-90 transition-opacity transform hover:scale-105">
-                        <i class="fas fa-brain mr-2"></i> วิเคราะห์ด้วย AI
-                    </button>
                     <button id="show-kpi-button"
                         class="bg-lime-500 text-white font-bold text-sm md:text-lg py-3 px-4 md:px-6 rounded-lg shadow-lg hover:bg-lime-600 transition-colors transform hover:scale-105">
                         ดูรายงานสรุปประจำเดือน
@@ -239,17 +234,6 @@
                         </div>
                     </div>
                     
-                    <!-- AI Insights Card -->
-                    <div class="bg-gradient-to-r from-purple-50 to-indigo-50 p-6 rounded-xl shadow-lg mb-8">
-                        <h3 class="text-xl font-bold text-gray-800 mb-4"><i class="fas fa-brain text-purple-600 mr-2"></i> ข้อมูลเชิงลึกจาก AI</h3>
-                        <div id="ai-insights" class="text-gray-700">
-                            <p class="mb-3">กำลังวิเคราะห์ข้อมูล...</p>
-                            <div class="flex justify-center">
-                                <div class="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-purple-500"></div>
-                            </div>
-                        </div>
-                    </div>
-                    
                     <!-- Error Breakdown Chart Card -->
                     <div class="bg-gray-100 p-6 rounded-xl shadow-lg mb-8">
                         <h3 class="text-xl font-bold text-gray-800 mb-4">สัดส่วนความผิดพลาดรายประเภท</h3>
@@ -311,23 +295,6 @@
                     <button id="cancel-reset" class="bg-gray-300 text-gray-800 font-bold text-lg py-3 px-6 rounded-lg shadow-md hover:bg-gray-400 transition-colors transform hover:scale-105">
                         ยกเลิก
                     </button>
-                </div>
-            </div>
-        </div>
-        
-        <!-- AI Analysis Modal -->
-        <div id="ai-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden items-center justify-center p-4 z-50">
-            <div class="bg-white p-8 rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
-                <div class="flex justify-between items-center mb-6">
-                    <h2 class="text-2xl font-bold text-gray-800"><i class="fas fa-brain text-purple-600 mr-2"></i> การวิเคราะห์ด้วย AI</h2>
-                    <button id="close-ai-modal" class="text-gray-500 hover:text-gray-700">
-                        <i class="fas fa-times text-xl"></i>
-                    </button>
-                </div>
-                <div id="ai-content" class="text-gray-700">
-                    <div class="flex justify-center items-center h-40">
-                        <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-purple-500"></div>
-                    </div>
                 </div>
             </div>
         </div>
