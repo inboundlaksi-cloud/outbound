@@ -77,6 +77,7 @@ const closeAiModal = document.getElementById('close-ai-modal');
 const aiContent = document.getElementById('ai-content');
 const aiAnalysisBtn = document.getElementById('ai-analysis-btn');
 const aiInsights = document.getElementById('ai-insights');
+const createAdminBtn = document.getElementById('create-admin-btn');
 
 // Variables for current data
 let employees;
@@ -85,6 +86,60 @@ let performanceChart = null; // Chart.js instance for line graph
 let errorBreakdownChart = null; // Chart.js instance for doughnut chart
 let logs = [];
 let currentUser = null;
+
+// Function to create the first admin user
+async function createFirstAdmin() {
+    const email = "admin@admin.com";
+    const password = "000000";
+    
+    try {
+        // Check if admin already exists
+        const usersSnapshot = await db.collection('users').where('email', '==', email).get();
+        
+        if (usersSnapshot.empty) {
+            // Create user in Firebase Authentication
+            const userCredential = await auth.createUserWithEmailAndPassword(email, password);
+            const user = userCredential.user;
+            
+            // Add user to Firestore with admin role
+            await db.collection('users').doc(user.uid).set({
+                name: "Administrator",
+                email: email,
+                role: "ADMIN",
+                status: "approved",
+                createdAt: firebase.firestore.FieldValue.serverTimestamp()
+            });
+            
+            alert("สร้างแอดมินสำเร็จ! อีเมล: " + email + " รหัสผ่าน: " + password);
+            createAdminBtn.style.display = "none";
+        } else {
+            alert("แอดมินมีอยู่แล้วในระบบ");
+            createAdminBtn.style.display = "none";
+        }
+    } catch (error) {
+        console.error("เกิดข้อผิดพลาดในการสร้างแอดมิน:", error);
+        alert("เกิดข้อผิดพลาด: " + error.message);
+    }
+}
+
+// Check if there are any users in the system
+async function checkIfAdminExists() {
+    try {
+        const usersSnapshot = await db.collection('users').limit(1).get();
+        
+        if (usersSnapshot.empty) {
+            // No users exist, show create admin button
+            createAdminBtn.style.display = "block";
+        } else {
+            // Users exist, hide create admin button
+            createAdminBtn.style.display = "none";
+        }
+    } catch (error) {
+        console.error("เกิดข้อผิดพลาดในการตรวจสอบผู้ใช้:", error);
+        // If there's an error (like permission denied), assume no users exist
+        createAdminBtn.style.display = "block";
+    }
+}
 
 // Check auth state
 auth.onAuthStateChanged(async (user) => {
@@ -122,6 +177,9 @@ auth.onAuthStateChanged(async (user) => {
         loginForm.classList.remove('hidden');
         registerForm.classList.add('hidden');
         pendingApproval.classList.add('hidden');
+        
+        // Check if we need to show the create admin button
+        checkIfAdminExists();
     }
 });
 
@@ -197,6 +255,9 @@ document.getElementById('logout-btn').addEventListener('click', () => {
 document.getElementById('logout-main-btn').addEventListener('click', () => {
     auth.signOut();
 });
+
+// Create admin button
+createAdminBtn.addEventListener('click', createFirstAdmin);
 
 // Function to initialize data from Firestore
 async function initializeData() {
