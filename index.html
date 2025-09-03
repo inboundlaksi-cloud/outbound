@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ระบบบันทึกสถิติความผิดพลาดในการจัดสินค้า</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chart.js for graphs -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore-compat.js"></script>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body class="p-4 md:p-8">
+    <!-- Login Section -->
+    <div id="login-section" class="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100">
+        <div class="bg-white p-8 rounded-2xl shadow-xl w-full max-w-md">
+            <div class="text-center mb-8">
+                <div class="mx-auto bg-indigo-100 w-16 h-16 rounded-full flex items-center justify-center mb-4">
+                    <i class="fas fa-warehouse text-indigo-600 text-2xl"></i>
+                </div>
+                <h1 class="text-3xl font-bold text-gray-800">ระบบบันทึกสถิติความผิดพลาด</h1>
+                <p class="text-gray-600 mt-2">สำหรับพนักงาน Picking และหัวหน้างาน</p>
+            </div>
+            
+            <div id="login-form">
+                <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-medium mb-2" for="email">อีเมล</label>
+                    <input type="email" id="email" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="your@email.com">
+                </div>
+                <div class="mb-6">
+                    <label class="block text-gray-700 text-sm font-medium mb-2" for="password">รหัสผ่าน</label>
+                    <input type="password" id="password" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="••••••••">
+                </div>
+                <button id="login-btn" class="w-full bg-indigo-600 text-white font-bold py-3 px-4 rounded-lg shadow-md hover:bg-indigo-700 transition-colors">
+                    เข้าสู่ระบบ
+                </button>
+                <div class="mt-4 text-center">
+                    <p class="text-sm text-gray-600">ยังไม่มีบัญชี? <a href="#" id="show-register" class="text-indigo-600 hover:underline">สมัครสมาชิก</a></p>
+                </div>
+            </div>
+            
+            <div id="register-form" class="hidden">
+                <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-medium mb-2" for="reg-name">ชื่อ-นามสกุล</label>
+                    <input type="text" id="reg-name" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="ชื่อ-นามสกุล">
+                </div>
+                <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-medium mb-2" for="reg-email">อีเมล</label>
+                    <input type="email" id="reg-email" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="your@email.com">
+                </div>
+                <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-medium mb-2" for="reg-password">รหัสผ่าน</label>
+                    <input type="password" id="reg-password" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="••••••••">
+                </div>
+                <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-medium mb-2" for="reg-role">บทบาท</label>
+                    <select id="reg-role" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                        <option value="PICKING">พนักงาน Picking</option>
+                        <option value="CHECKER">พนักงาน Checker</option>
+                        <option value="SENIOR">พนักงาน Senior</option>
+                    </select>
+                </div>
+                <div class="mb-6">
+                    <label class="flex items-center">
+                        <input type="checkbox" id="reg-terms" class="form-checkbox h-4 w-4 text-indigo-600">
+                        <span class="ml-2 text-gray-700 text-sm">ฉันยอมรับ <a href="#" class="text-indigo-600 hover:underline">เงื่อนไขและข้อกำหนด</a></span>
+                    </label>
+                </div>
+                <button id="register-btn" class="w-full bg-indigo-600 text-white font-bold py-3 px-4 rounded-lg shadow-md hover:bg-indigo-700 transition-colors">
+                    สมัครสมาชิก
+                </button>
+                <div class="mt-4 text-center">
+                    <p class="text-sm text-gray-600">มีบัญชีอยู่แล้ว? <a href="#" id="show-login" class="text-indigo-600 hover:underline">เข้าสู่ระบบ</a></p>
+                </div>
+            </div>
+            
+            <div id="pending-approval" class="hidden text-center py-8">
+                <div class="mx-auto bg-yellow-100 w-16 h-16 rounded-full flex items-center justify-center mb-4">
+                    <i class="fas fa-clock text-yellow-600 text-2xl"></i>
+                </div>
+                <h3 class="text-xl font-bold text-gray-800 mb-2">รอการอนุมัติ</h3>
+                <p class="text-gray-600">บัญชีของคุณอยู่ระหว่างการตรวจสอบโดยผู้ดูแลระบบ</p>
+                <p class="text-gray-600 mt-2">คุณจะได้รับอีเมลแจ้งเมื่อบัญชีได้รับการอนุมัติ</p>
+                <button id="logout-btn" class="mt-6 text-indigo-600 hover:underline">ออกจากระบบ</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Application -->
+    <div id="main-app" class="hidden">
+        <div class="container-wrapper max-w-7xl mx-auto">
+            <header class="text-center mb-10">
+                <h1 class="text-3xl md:text-5xl font-extrabold text-gray-900 mb-2">ระบบบันทึกสถิติ<br>ความผิดพลาดในการจัดสินค้า</h1>
+                <p class="text-lg text-gray-600 font-medium">สำหรับพนักงาน Picking และหัวหน้างาน</p>
+            </header>
+            
+            <div class="flex flex-col md:flex-row justify-between items-center gap-4 mb-8">
+                <div class="flex flex-col items-start gap-1">
+                    <span id="user-id-display" class="text-gray-500 text-sm md:text-base break-words">รหัสผู้ใช้: ผู้ทดสอบ</span>
+                    <span id="user-role-display" class="text-indigo-600 font-bold text-base md:text-lg">บทบาท: ADMIN</span>
+                </div>
+                <div class="flex flex-col md:flex-row gap-4 w-full md:w-auto justify-end">
+                    <button id="ai-analysis-btn"
+                        class="bg-gradient-to-r from-purple-600 to-indigo-700 text-white font-bold text-sm md:text-lg py-3 px-4 md:px-6 rounded-lg shadow-lg hover:opacity-90 transition-opacity transform hover:scale-105">
+                        <i class="fas fa-brain mr-2"></i> วิเคราะห์ด้วย AI
+                    </button>
+                    <button id="show-kpi-button"
+                        class="bg-lime-500 text-white font-bold text-sm md:text-lg py-3 px-4 md:px-6 rounded-lg shadow-lg hover:bg-lime-600 transition-colors transform hover:scale-105">
+                        ดูรายงานสรุปประจำเดือน
+                    </button>
+                    <button id="show-daily-button"
+                        class="bg-gray-500 text-white font-bold text-sm md:text-lg py-3 px-4 md:px-6 rounded-lg shadow-lg hover:bg-gray-600 transition-colors transform hover:scale-105 hidden">
+                        ย้อนกลับ
+                    </button>
+                    <button id="approval-btn"
+                        class="bg-yellow-500 text-white font-bold text-sm md:text-lg py-3 px-4 md:px-6 rounded-lg shadow-lg hover:bg-yellow-600 transition-colors transform hover:scale-105 hidden">
+                        <i class="fas fa-user-check mr-2"></i> อนุมัติผู้ใช้
+                    </button>
+                    <button id="change-role-button"
+                        class="bg-blue-800 text-white font-bold text-sm md:text-lg py-3 px-4 md:px-6 rounded-lg shadow-lg hover:bg-blue-900 transition-colors transform hover:scale-105">
+                        เปลี่ยนบทบาท
+                    </button>
+                    <button id="logout-main-btn"
+                        class="bg-red-600 text-white font-bold text-sm md:text-lg py-3 px-4 md:px-6 rounded-lg shadow-lg hover:bg-red-700 transition-colors transform hover:scale-105">
+                        <i class="fas fa-sign-out-alt mr-2"></i> ออกจากระบบ
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Daily Tracking Section -->
+            <section id="daily-view" class="mb-12">
+                <h2 class="text-2xl md:text-3xl font-bold text-gray-800 mb-6">การประเมินประจำวัน</h2>
+                <div class="mb-4">
+                    <input type="text" id="employee-search" placeholder="ค้นหาชื่อพนักงาน..."
+                        class="w-full p-3 text-lg border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-shadow">
+                </div>
+                <div class="table-container shadow-lg">
+                    <table class="min-w-full bg-white border border-gray-200">
+                        <thead>
+                            <tr class="bg-purple-600 text-white text-left text-sm font-semibold uppercase tracking-wider">
+                                <th class="px-4 py-3 border-b-2 border-gray-300">ชื่อพนักงาน</th>
+                                <th class="px-4 py-3 border-b-2 border-gray-300 text-center">จัดสินค้าผิด</th>
+                                <th class="px-4 py-3 border-b-2 border-gray-300 text-center">จัดสินค้าเกิน</th>
+                                <th class="px-4 py-3 border-b-2 border-gray-300 text-center">จัดสินค้าขาด</th>
+                                <th class="px-4 py-3 border-b-2 border-gray-300 text-center">Batch ไม่ตรง</th>
+                                <th class="px-4 py-3 border-b-2 border-gray-300 text-center">จัดไม่ตรง Route</th>
+                                <th class="px-4 py-3 border-b-2 border-gray-300 text-center">ความสะอาด</th>
+                                <th class="px-4 py-3 border-b-2 border-gray-300 text-center">จัดถูก (ครั้ง)</th>
+                                <th class="px-4 py-3 border-b-2 border-gray-300 text-center">รวมผิด (ครั้ง)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="employee-table-body" class="divide-y divide-gray-200">
+                            <!-- Employee rows will be inserted here by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+                
+                <!-- Log Section -->
+                <div class="mt-12 bg-gray-100 p-6 rounded-xl shadow-lg">
+                    <h3 class="text-xl font-bold text-gray-800 mb-4">บันทึกการแก้ไขล่าสุด</h3>
+                    <ul id="log-list" class="space-y-2 text-gray-700 max-h-60 overflow-y-auto">
+                        <!-- Log entries will be inserted here -->
+                    </ul>
+                </div>
+            </section>
+            
+            <!-- Monthly KPI Report Section -->
+            <section id="monthly-kpi-view" class="hidden">
+                <h2 class="text-2xl md:text-3xl font-bold text-gray-800 mb-6">รายงานสรุป KPI ประจำเดือน</h2>
+                <div class="mb-8 flex flex-col md:flex-row items-start md:items-center gap-4">
+                    <label for="monthly-bills" class="text-lg text-gray-700 font-medium">จำนวนบิลประจำเดือน:</label>
+                    <input type="number" id="monthly-bills" min="0" value="0"
+                        class="flex-grow p-3 text-lg border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-shadow">
+                    <button id="reset-button"
+                        class="bg-pink-500 text-white font-bold text-lg py-3 px-6 rounded-lg shadow-lg hover:bg-pink-600 transition-colors transform hover:scale-105">
+                        รีเซ็ตข้อมูลประจำเดือน
+                    </button>
+                    <button id="export-button"
+                        class="bg-purple-500 text-white font-bold text-lg py-3 px-6 rounded-lg shadow-lg hover:bg-purple-600 transition-colors transform hover:scale-105">
+                        ส่งออกรายงาน
+                    </button>
+                </div>
+                
+                <div class="table-container shadow-lg">
+                    <table class="min-w-full bg-white border border-gray-200">
+                        <thead>
+                            <tr class="bg-purple-600 text-white text-left text-base font-semibold uppercase tracking-wider">
+                                <th class="px-4 py-3 border-b-2 border-gray-300">ชื่อพนักงาน</th>
+                                <th class="px-4 py-3 border-b-2 border-gray-300 text-center">รวมความผิดพลาด</th>
+                                <th class="px-4 py-3 border-b-2 border-gray-300 text-center">อัตราความผิดพลาด (%)</th>
+                                <th class="px-4 py-3 border-b-2 border-gray-300 text-center">อันดับ</th>
+                                <th class="px-4 py-3 border-b-2 border-gray-300 text-center">ความผิดพลาดสูงสุด</th>
+                                <th class="px-4 py-3 border-b-2 border-gray-300">ดูรายละเอียด</th>
+                            </tr>
+                        </thead>
+                        <tbody id="kpi-report-body" class="divide-y divide-gray-200">
+                            <!-- KPI report rows will be inserted here by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+            
+            <!-- Employee Detail View Section -->
+            <section id="employee-detail-view" class="hidden mb-12">
+                <div class="flex items-center justify-between mb-6">
+                    <button id="back-to-kpi-button"
+                        class="bg-gray-500 text-white font-bold text-lg py-3 px-6 rounded-lg shadow-lg hover:bg-gray-600 transition-colors transform hover:scale-105">
+                        ย้อนกลับ
+                    </button>
+                    <h2 id="detail-employee-name" class="text-2xl md:text-3xl font-bold text-gray-800"></h2>
+                </div>
+                
+                <div class="detail-view-container">
+                    <!-- Stats Summary Card -->
+                    <div class="bg-gray-100 p-6 rounded-xl shadow-lg mb-8">
+                        <h3 class="text-xl font-bold text-gray-800 mb-4">สรุปสถิติ</h3>
+                        <div class="space-y-2">
+                            <p class="text-lg text-gray-700"><span class="font-semibold">ความผิดพลาดทั้งหมด:</span> <span id="summary-total-errors" class="font-bold text-red-500"></span></p>
+                            <p class="text-lg text-gray-700"><span class="font-semibold">จำนวนสินค้าที่จัดถูกต้อง:</span> <span id="summary-correct-picks" class="font-bold text-green-500"></span></p>
+                            <p class="text-lg text-gray-700"><span class="font-semibold">อัตราความผิดพลาด:</span> <span id="summary-pps" class="font-bold text-purple-600"></span></p>
+                            <p class="text-lg text-gray-700"><span class="font-semibold">ประเภทความผิดพลาดสูงสุด:</span> <span id="summary-most-frequent" class="font-bold text-purple-600"></span></p>
+                        </div>
+                    </div>
+                    
+                    <!-- AI Insights Card -->
+                    <div class="bg-gradient-to-r from-purple-50 to-indigo-50 p-6 rounded-xl shadow-lg mb-8">
+                        <h3 class="text-xl font-bold text-gray-800 mb-4"><i class="fas fa-brain text-purple-600 mr-2"></i> ข้อมูลเชิงลึกจาก AI</h3>
+                        <div id="ai-insights" class="text-gray-700">
+                            <p class="mb-3">กำลังวิเคราะห์ข้อมูล...</p>
+                            <div class="flex justify-center">
+                                <div class="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-purple-500"></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Error Breakdown Chart Card -->
+                    <div class="bg-gray-100 p-6 rounded-xl shadow-lg mb-8">
+                        <h3 class="text-xl font-bold text-gray-800 mb-4">สัดส่วนความผิดพลาดรายประเภท</h3>
+                        <div class="chart-container">
+                            <canvas id="errorBreakdownChart"></canvas>
+                        </div>
+                    </div>
+                    
+                    <!-- Performance Chart Card -->
+                    <div class="bg-gray-100 p-6 rounded-xl shadow-lg">
+                        <h3 class="text-xl font-bold text-gray-800 mb-4">กราฟเปรียบเทียบการทำงาน (ตัวอย่าง)</h3>
+                        <div class="chart-container">
+                            <canvas id="performanceChart"></canvas>
+                        </div>
+                    </div>
+                    
+                    <!-- Employee Log Section -->
+                    <div class="bg-gray-100 p-6 rounded-xl shadow-lg mt-8">
+                        <h3 class="text-xl font-bold text-gray-800 mb-4">ประวัติการแก้ไขส่วนตัว</h3>
+                        <ul id="employee-history-log" class="space-y-2 text-gray-700 max-h-60 overflow-y-auto">
+                            <!-- Employee specific log entries will be inserted here -->
+                        </ul>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- User Approval Section -->
+            <section id="approval-view" class="hidden mb-12">
+                <h2 class="text-2xl md:text-3xl font-bold text-gray-800 mb-6">การอนุมัติผู้ใช้งาน</h2>
+                <div class="table-container shadow-lg">
+                    <table class="min-w-full bg-white border border-gray-200">
+                        <thead>
+                            <tr class="bg-purple-600 text-white text-left text-sm font-semibold uppercase tracking-wider">
+                                <th class="px-4 py-3 border-b-2 border-gray-300">ชื่อผู้ใช้</th>
+                                <th class="px-4 py-3 border-b-2 border-gray-300">อีเมล</th>
+                                <th class="px-4 py-3 border-b-2 border-gray-300">บทบาท</th>
+                                <th class="px-4 py-3 border-b-2 border-gray-300">สถานะ</th>
+                                <th class="px-4 py-3 border-b-2 border-gray-300">วันที่สมัคร</th>
+                                <th class="px-4 py-3 border-b-2 border-gray-300 text-center">การดำเนินการ</th>
+                            </tr>
+                        </thead>
+                        <tbody id="approval-table-body" class="divide-y divide-gray-200">
+                            <!-- Approval rows will be inserted here by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </div>
+        
+        <!-- Custom Confirmation Modal -->
+        <div id="confirmation-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden items-center justify-center p-4 z-50">
+            <div class="bg-white p-8 rounded-2xl shadow-2xl max-w-lg w-full text-center transform scale-100 transition-transform">
+                <p class="text-2xl font-bold text-gray-800 mb-4">คุณแน่ใจหรือไม่ว่าต้องการรีเซ็ตข้อมูล?</p>
+                <p class="text-lg text-gray-600 mb-6">ข้อมูลความผิดพลาดประจำเดือนทั้งหมดจะถูกลบอย่างถาวร</p>
+                <div class="flex flex-col md:flex-row justify-center gap-4">
+                    <button id="confirm-reset" class="bg-pink-500 text-white font-bold text-lg py-3 px-6 rounded-lg shadow-md hover:bg-pink-600 transition-colors transform hover:scale-105">
+                        ยืนยัน
+                    </button>
+                    <button id="cancel-reset" class="bg-gray-300 text-gray-800 font-bold text-lg py-3 px-6 rounded-lg shadow-md hover:bg-gray-400 transition-colors transform hover:scale-105">
+                        ยกเลิก
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- AI Analysis Modal -->
+        <div id="ai-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden items-center justify-center p-4 z-50">
+            <div class="bg-white p-8 rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-2xl font-bold text-gray-800"><i class="fas fa-brain text-purple-600 mr-2"></i> การวิเคราะห์ด้วย AI</h2>
+                    <button id="close-ai-modal" class="text-gray-500 hover:text-gray-700">
+                        <i class="fas fa-times text-xl"></i>
+                    </button>
+                </div>
+                <div id="ai-content" class="text-gray-700">
+                    <div class="flex justify-center items-center h-40">
+                        <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-purple-500"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
