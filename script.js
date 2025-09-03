@@ -72,13 +72,6 @@ const userRoleDisplay = document.getElementById('user-role-display');
 const changeRoleButton = document.getElementById('change-role-button');
 const logList = document.getElementById('log-list');
 const employeeHistoryLog = document.getElementById('employee-history-log');
-const aiModal = document.getElementById('ai-modal');
-const closeAiModal = document.getElementById('close-ai-modal');
-const aiContent = document.getElementById('ai-content');
-const aiAnalysisBtn = document.getElementById('ai-analysis-btn');
-const aiInsights = document.getElementById('ai-insights');
-const createAdminBtn = document.getElementById('create-admin-btn');
-const autoLoginBtn = document.getElementById('auto-login-btn');
 
 // Variables for current data
 let employees;
@@ -88,102 +81,30 @@ let errorBreakdownChart = null; // Chart.js instance for doughnut chart
 let logs = [];
 let currentUser = null;
 
-// Auto-login function for admin
-async function autoLogin() {
-    const email = "admin@admin.com";
-    const password = "000000";
+// Check if password should be remembered
+function checkRememberedPassword() {
+    const rememberedEmail = localStorage.getItem('rememberedEmail');
+    const rememberedPassword = localStorage.getItem('rememberedPassword');
     
-    try {
-        // Try to sign in with admin credentials
-        const userCredential = await auth.signInWithEmailAndPassword(email, password);
-        
-        // Check if user exists in Firestore
-        const userDoc = await db.collection('users').doc(userCredential.user.uid).get();
-        
-        if (!userDoc.exists) {
-            // Create admin user in Firestore if not exists
-            await db.collection('users').doc(userCredential.user.uid).set({
-                name: "Administrator",
-                email: email,
-                role: "ADMIN",
-                status: "approved",
-                createdAt: firebase.firestore.FieldValue.serverTimestamp()
-            });
-        }
-        
-        // Show main app
-        loginSection.classList.add('hidden');
-        mainApp.classList.remove('hidden');
-        
-        // Set user role
-        userRoleIndex = allRoles.indexOf("ADMIN");
-        
-        // Initialize data
-        initializeData();
-        toggleView('daily');
-    } catch (error) {
-        console.error("Auto-login error:", error);
-        alert("เกิดข้อผิดพลาดในการล็อกอินอัตโนมัติ: " + error.message);
+    if (rememberedEmail && rememberedPassword) {
+        document.getElementById('email').value = rememberedEmail;
+        document.getElementById('password').value = rememberedPassword;
+        document.getElementById('remember-password').checked = true;
     }
 }
 
-// Function to create the first admin user
-async function createFirstAdmin() {
-    const email = "admin@admin.com";
-    const password = "000000";
+// Save password if remember me is checked
+function savePasswordIfRemembered() {
+    const rememberPassword = document.getElementById('remember-password').checked;
+    const email = document.getElementById('email').value;
+    const password = document.getElementById('password').value;
     
-    try {
-        // Check if admin already exists
-        const usersSnapshot = await db.collection('users').where('email', '==', email).get();
-        
-        if (usersSnapshot.empty) {
-            // Create user in Firebase Authentication
-            const userCredential = await auth.createUserWithEmailAndPassword(email, password);
-            const user = userCredential.user;
-            
-            // Add user to Firestore with admin role
-            await db.collection('users').doc(user.uid).set({
-                name: "Administrator",
-                email: email,
-                role: "ADMIN",
-                status: "approved",
-                createdAt: firebase.firestore.FieldValue.serverTimestamp()
-            });
-            
-            alert("สร้างแอดมินสำเร็จ! อีเมล: " + email + " รหัสผ่าน: " + password);
-            createAdminBtn.style.display = "none";
-        } else {
-            alert("แอดมินมีอยู่แล้วในระบบ");
-            createAdminBtn.style.display = "none";
-        }
-    } catch (error) {
-        console.error("เกิดข้อผิดพลาดในการสร้างแอดมิน:", error);
-        alert("เกิดข้อผิดพลาด: " + error.message);
-    }
-}
-
-// Check if there are any users in the system
-async function checkIfAdminExists() {
-    try {
-        const usersSnapshot = await db.collection('users').limit(1).get();
-        
-        if (usersSnapshot.empty) {
-            // No users exist, show create admin button
-            createAdminBtn.style.display = "block";
-            autoLoginBtn.style.display = "block";
-            console.log("No users found, showing create admin button");
-        } else {
-            // Users exist, hide create admin button
-            createAdminBtn.style.display = "none";
-            autoLoginBtn.style.display = "block";
-            console.log("Users found, hiding create admin button");
-        }
-    } catch (error) {
-        console.error("เกิดข้อผิดพลาดในการตรวจสอบผู้ใช้:", error);
-        // If there's an error (like permission denied), assume no users exist
-        createAdminBtn.style.display = "block";
-        autoLoginBtn.style.display = "block";
-        console.log("Error checking users, showing create admin button");
+    if (rememberPassword && email && password) {
+        localStorage.setItem('rememberedEmail', email);
+        localStorage.setItem('rememberedPassword', password);
+    } else {
+        localStorage.removeItem('rememberedEmail');
+        localStorage.removeItem('rememberedPassword');
     }
 }
 
@@ -224,8 +145,8 @@ auth.onAuthStateChanged(async (user) => {
         registerForm.classList.add('hidden');
         pendingApproval.classList.add('hidden');
         
-        // Check if we need to show the create admin button
-        checkIfAdminExists();
+        // Check for remembered password
+        checkRememberedPassword();
     }
 });
 
@@ -236,6 +157,7 @@ document.getElementById('login-btn').addEventListener('click', async () => {
     
     try {
         await auth.signInWithEmailAndPassword(email, password);
+        savePasswordIfRemembered();
     } catch (error) {
         alert('อีเมลหรือรหัสผ่านไม่ถูกต้อง');
         console.error(error);
@@ -245,12 +167,13 @@ document.getElementById('login-btn').addEventListener('click', async () => {
 // Register form submission
 document.getElementById('register-btn').addEventListener('click', async () => {
     const name = document.getElementById('reg-name').value;
+    const nickname = document.getElementById('reg-nickname').value;
     const email = document.getElementById('reg-email').value;
     const password = document.getElementById('reg-password').value;
     const role = document.getElementById('reg-role').value;
     const termsAccepted = document.getElementById('reg-terms').checked;
     
-    if (!name || !email || !password || !termsAccepted) {
+    if (!name || !nickname || !email || !password || !termsAccepted) {
         alert('กรุณากรอกข้อมูลให้ครบถ้วน');
         return;
     }
@@ -260,9 +183,12 @@ document.getElementById('register-btn').addEventListener('click', async () => {
         const userCredential = await auth.createUserWithEmailAndPassword(email, password);
         const user = userCredential.user;
         
+        // Combine name and nickname for display
+        const displayName = `${name} (${nickname})`;
+        
         // Add user to Firestore with pending status
         await db.collection('users').doc(user.uid).set({
-            name,
+            name: displayName,
             email,
             role,
             status: 'pending',
@@ -301,12 +227,6 @@ document.getElementById('logout-btn').addEventListener('click', () => {
 document.getElementById('logout-main-btn').addEventListener('click', () => {
     auth.signOut();
 });
-
-// Create admin button
-createAdminBtn.addEventListener('click', createFirstAdmin);
-
-// Auto login button
-autoLoginBtn.addEventListener('click', autoLogin);
 
 // Function to initialize data from Firestore
 async function initializeData() {
@@ -355,6 +275,9 @@ function updateUIBasedOnRole() {
     const canSeeModifiers = ['SENIOR', 'SUPERVISOR', 'ADMIN'].includes(userRole);
     const canApproveUsers = ['SUPERVISOR', 'ADMIN'].includes(userRole);
     
+    // Only admin can change role
+    const canChangeRole = userRole === 'ADMIN';
+    
     // Update Daily View controls
     const dailyControls = document.querySelectorAll('.add-error-btn, .minus-error-btn, .employee-name-input');
     dailyControls.forEach(el => {
@@ -398,6 +321,13 @@ function updateUIBasedOnRole() {
         document.getElementById('approval-btn').classList.add('hidden');
     }
     
+    // Update change role button - only for admin
+    if (canChangeRole) {
+        changeRoleButton.classList.remove('hidden');
+    } else {
+        changeRoleButton.classList.add('hidden');
+    }
+    
     // Hide/show tooltips based on role
     const tooltips = document.querySelectorAll('.modifier-tooltip');
     tooltips.forEach(tooltip => {
@@ -418,8 +348,14 @@ function updateUIBasedOnRole() {
     }
 }
 
-// Function to switch roles
+// Function to switch roles - only for admin
 function switchRole() {
+    // Only admin can change roles
+    if (allRoles[userRoleIndex] !== 'ADMIN') {
+        alert('เฉพาะแอดมินเท่านั้นที่สามารถเปลี่ยนบทบาทได้');
+        return;
+    }
+    
     userRoleIndex = (userRoleIndex + 1) % allRoles.length;
     updateUIBasedOnRole();
     // After switching roles, re-render the current view to update permissions
@@ -827,9 +763,6 @@ function renderEmployeeDetailView(employeeId) {
     document.getElementById('summary-pps').textContent = `${pps}%`;
     document.getElementById('summary-most-frequent').textContent = `${mostFrequentError.name} (${mostFrequentError.percentage}%)`;
     
-    // Generate AI insights
-    generateAIInsights(employee);
-    
     // Mock data for the line chart (as a real-time log is not persistent in localStorage)
     const labels = ['วันที่ 1', 'วันที่ 2', 'วันที่ 3', 'วันที่ 4', 'วันที่ 5', 'วันที่ 6', 'วันที่ 7'];
     const mockErrors = [2, 1, 3, 2, 0, 1, 2]; // Example daily error data
@@ -959,161 +892,6 @@ function renderEmployeeDetailView(employeeId) {
     }
 }
 
-// Function to generate AI insights for an employee
-async function generateAIInsights(employee) {
-    // Prepare data for AI analysis
-    const errorData = errorTypes.map(type => ({
-        type: type.name,
-        count: employee.errors[type.key]?.value || 0
-    }));
-    
-    const totalErrors = errorData.reduce((sum, item) => sum + item.count, 0);
-    const correctPicks = employee.errors.correctPicks?.value || 0;
-    
-    // Create prompt for AI
-    const prompt = `
-    ฉันมีข้อมูลความผิดพลาดของพนักงานจัดสินค้าคนหนึ่ง ดังนี้:
-    
-    ชื่อพนักงาน: ${employee.name}
-    จำนวนความผิดพลาดทั้งหมด: ${totalErrors} ครั้ง
-    จำนวนการจัดสินค้าที่ถูกต้อง: ${correctPicks} ครั้ง
-    
-    ข้อมูลความผิดพลาดแยกตามประเภท:
-    ${errorData.map(item => `- ${item.type}: ${item.count} ครั้ง`).join('\n')}
-    
-    กรุณาวิเคราะห์ข้อมูลนี้และให้คำแนะนำในการปรับปรุงประสิทธิภาพการทำงานของพนักงานคนนี้ โดยเน้นที่:
-    1. ประเภทความผิดพลาดที่เกิดขึ้นบ่อยที่สุด
-    2. แนวทางในการลดความผิดพลาดประเภทนั้นๆ
-    3. ข้อเสนอแนะในการฝึกอบรมเพิ่มเติม
-    4. การประเมินโดยรวมของพนักงาน
-    
-    กรุณาตอบเป็นภาษาไทยและจัดรูปแบบให้อ่านง่าย
-    `;
-    
-    // Show loading state
-    aiInsights.innerHTML = `
-        <p class="mb-3">กำลังวิเคราะห์ข้อมูล...</p>
-        <div class="flex justify-center">
-            <div class="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-purple-500"></div>
-        </div>
-    `;
-    
-    try {
-        // Call Gemini AI API
-        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=AIzaSyB3PCMRQE_QobI_fnO11299hoWlKCurksE`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                contents: [{
-                    parts: [{
-                        text: prompt
-                    }]
-                }]
-            })
-        });
-        
-        const data = await response.json();
-        const aiResponse = data.candidates[0].content.parts[0].text;
-        
-        // Display AI insights
-        aiInsights.innerHTML = `
-            <div class="prose max-w-none">
-                ${aiResponse.split('\n').map(line => `<p class="mb-2">${line}</p>`).join('')}
-            </div>
-        `;
-    } catch (error) {
-        console.error('Error calling AI API:', error);
-        aiInsights.innerHTML = `
-            <p class="text-red-500">เกิดข้อผิดพลาดในการวิเคราะห์ข้อมูล กรุณาลองใหม่อีกครั้ง</p>
-        `;
-    }
-}
-
-// Function to generate comprehensive AI analysis
-async function generateComprehensiveAIAnalysis() {
-    // Prepare data for AI analysis
-    const employeeData = employees.map(emp => {
-        const totalErrors = Object.values(emp.errors).reduce((sum, error) => sum + (error.value || 0), 0) - (emp.errors.correctPicks?.value || 0);
-        const correctPicks = emp.errors.correctPicks?.value || 0;
-        
-        return {
-            name: emp.name,
-            totalErrors,
-            correctPicks,
-            errorTypes: errorTypes.map(type => ({
-                type: type.name,
-                count: emp.errors[type.key]?.value || 0
-            }))
-        };
-    });
-    
-    // Create prompt for AI
-    const prompt = `
-    ฉันมีข้อมูลความผิดพลาดของพนักงานจัดสินค้าในคลังสินค้า ดังนี้:
-    
-    ข้อมูลพนักงานทั้งหมด:
-    ${employeeData.map(emp => `
-    - ชื่อ: ${emp.name}
-      ความผิดพลาดทั้งหมด: ${emp.totalErrors} ครั้ง
-      การจัดสินค้าที่ถูกต้อง: ${emp.correctPicks} ครั้ง
-      ข้อมูลความผิดพลาดแยกตามประเภท:
-      ${emp.errorTypes.map(item => `  - ${item.type}: ${item.count} ครั้ง`).join('\n')}
-    `).join('\n')}
-    
-    จำนวนบิลประจำเดือน: ${monthlyBillsInput.value}
-    
-    กรุณาวิเคราะห์ข้อมูลนี้และให้คำแนะนำในการปรับปรุงประสิทธิภาพการทำงานโดยรวม โดยเน้นที่:
-    1. พนักงานที่มีประสิทธิภาพสูงสุดและต่ำสุด
-    2. ประเภทความผิดพลาดที่เกิดขึ้นบ่อยที่สุดในทีมงาน
-    3. แนวทางในการลดความผิดพลาดโดยรวม
-    4. ข้อเสนอแนะในการฝึกอบรมเพิ่มเติมสำหรับทีมงาน
-    5. การประเมินโดยรวมของทีมงานและแนวโน้ม
-    
-    กรุณาตอบเป็นภาษาไทยและจัดรูปแบบให้อ่านง่าย
-    `;
-    
-    // Show loading state
-    aiContent.innerHTML = `
-        <div class="flex justify-center items-center h-40">
-            <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-purple-500"></div>
-        </div>
-    `;
-    
-    try {
-        // Call Gemini AI API
-        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=AIzaSyB3PCMRQE_QobI_fnO11299hoWlKCurksE`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                contents: [{
-                    parts: [{
-                        text: prompt
-                    }]
-                }]
-            })
-        });
-        
-        const data = await response.json();
-        const aiResponse = data.candidates[0].content.parts[0].text;
-        
-        // Display AI insights
-        aiContent.innerHTML = `
-            <div class="prose max-w-none">
-                ${aiResponse.split('\n').map(line => `<p class="mb-3">${line}</p>`).join('')}
-            </div>
-        `;
-    } catch (error) {
-        console.error('Error calling AI API:', error);
-        aiContent.innerHTML = `
-            <p class="text-red-500">เกิดข้อผิดพลาดในการวิเคราะห์ข้อมูล กรุณาลองใหม่อีกครั้ง</p>
-        `;
-    }
-}
-
 // Event Listener for monthly bills input
 monthlyBillsInput.addEventListener('input', () => {
     saveData();
@@ -1192,16 +970,3 @@ exportButton.addEventListener('click', exportKpiReport);
 
 // Event Listener for employee search input
 employeeSearchInput.addEventListener('input', renderDailyTable);
-
-// Event Listener for AI analysis button
-aiAnalysisBtn.addEventListener('click', () => {
-    aiModal.classList.remove('hidden');
-    aiModal.classList.add('flex');
-    generateComprehensiveAIAnalysis();
-});
-
-// Event Listener for closing AI modal
-closeAiModal.addEventListener('click', () => {
-    aiModal.classList.remove('flex');
-    aiModal.classList.add('hidden');
-});
