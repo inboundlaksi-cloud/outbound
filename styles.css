@@ -5,15 +5,16 @@ body {
 
 .container-wrapper {
     background-color: white;
-    padding: 1.5rem; /* Reduced padding for mobile */
+    padding: 1.5rem;
     border-radius: 1.5rem;
     box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
 }
 
 .table-container {
     border-radius: 1rem;
-    overflow-x: auto; /* Enable horizontal scrolling for the table */
+    overflow-x: auto;
     -webkit-overflow-scrolling: touch;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
 }
 
 th, td {
@@ -55,7 +56,7 @@ th, td {
 /* Custom styling to control canvas size in a responsive way */
 .chart-container {
     position: relative;
-    height: 400px; /* Reduced height to make it more compact */
+    height: 400px;
     width: 100%;
 }
 
@@ -169,4 +170,198 @@ th, td {
     .add-error-btn, .minus-error-btn {
         width: 100%;
     }
+    
+    th, td {
+        font-size: 0.875rem;
+        padding: 0.5rem;
+    }
+    
+    .error-cell {
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+    }
+    
+    .button-group {
+        margin-top: 0;
+        margin-left: 0.5rem;
+    }
+    
+    .add-error-btn, .minus-error-btn {
+        width: 1.75rem;
+        height: 1.75rem;
+        font-size: 1rem;
+    }
+}
+
+/* Dark Mode styles */
+.dark-mode {
+    background-color: #1a202c;
+    color: #e2e8f0;
+}
+
+.dark-mode .container-wrapper {
+    background-color: #2d3748;
+    color: #e2e8f0;
+}
+
+.dark-mode .bg-white {
+    background-color: #2d3748 !important;
+}
+
+.dark-mode .text-gray-800 {
+    color: #e2e8f0 !important;
+}
+
+.dark-mode .text-gray-700 {
+    color: #cbd5e0 !important;
+}
+
+.dark-mode .text-gray-600 {
+    color: #a0aec0 !important;
+}
+
+.dark-mode .text-gray-500 {
+    color: #718096 !important;
+}
+
+.dark-mode .border-gray-200 {
+    border-color: #4a5568 !important;
+}
+
+.dark-mode .border-gray-300 {
+    border-color: #4a5568 !important;
+}
+
+.dark-mode .bg-gray-100 {
+    background-color: #2d3748 !important;
+}
+
+.dark-mode .bg-purple-600 {
+    background-color: #553c9a !important;
+}
+
+.dark-mode .bg-indigo-600 {
+    background-color: #4c51bf !important;
+}
+
+.dark-mode .bg-red-600 {
+    background-color: #e53e3e !important;
+}
+
+.dark-mode .bg-blue-800 {
+    background-color: #2c5282 !important;
+}
+
+.dark-mode .bg-yellow-500 {
+    background-color: #d69e2e !important;
+}
+
+.dark-mode .bg-green-500 {
+    background-color: #38a169 !important;
+}
+
+.dark-mode .bg-pink-500 {
+    background-color: #d53f8c !important;
+}
+
+.dark-mode .bg-gray-500 {
+    background-color: #4a5568 !important;
+}
+
+.dark-mode .bg-lime-500 {
+    background-color: #84cc16 !important;
+}
+
+.dark-mode .hover\:bg-gray-600:hover {
+    background-color: #4a5568 !important;
+}
+
+.dark-mode .hover\:bg-indigo-700:hover {
+    background-color: #434190 !important;
+}
+
+.dark-mode .hover\:bg-red-700:hover {
+    background-color: #c53030 !important;
+}
+
+.dark-mode .hover\:bg-blue-900:hover {
+    background-color: #2a4365 !important;
+}
+
+.dark-mode .hover\:bg-yellow-600:hover {
+    background-color: #b7791f !important;
+}
+
+.dark-mode .hover\:bg-green-600:hover {
+    background-color: #2f855a !important;
+}
+
+.dark-mode .hover\:bg-pink-600:hover {
+    background-color: #b83280 !important;
+}
+
+.dark-mode .hover\:bg-gray-400:hover {
+    background-color: #718096 !important;
+}
+
+.dark-mode .hover\:bg-lime-600:hover {
+    background-color: #65a30d !important;
+}
+
+.dark-mode table {
+    background-color: #2d3748;
+}
+
+.dark-mode th {
+    background-color: #4a5568 !important;
+    color: #e2e8f0;
+}
+
+.dark-mode td {
+    border-color: #4a5568;
+}
+
+.dark-mode input, .dark-mode select {
+    background-color: #4a5568;
+    color: #e2e8f0;
+    border-color: #4a5568;
+}
+
+.dark-mode input:focus, .dark-mode select:focus {
+    outline: none;
+    border-color: #63b3ed;
+    box-shadow: 0 0 0 1px #63b3ed;
+}
+
+.dark-mode .shadow-lg {
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5), 0 4px 6px -2px rgba(0, 0, 0, 0.3);
+}
+
+.dark-mode .bg-gradient-to-r {
+    background-image: none !important;
+}
+
+.dark-mode .from-blue-50 {
+    background-color: #2d3748 !important;
+}
+
+.dark-mode .to-indigo-100 {
+    background-color: #2d3748 !important;
+}
+
+.dark-mode .from-blue-500 {
+    background-color: #2b6cb0 !important;
+}
+
+.dark-mode .to-indigo-600 {
+    background-color: #4c51bf !important;
+}
+
+.dark-mode .from-indigo-500 {
+    background-color: #4c51bf !important;
+}
+
+.dark-mode .to-purple-600 {
+    background-color: #553c9a !important;
 }
