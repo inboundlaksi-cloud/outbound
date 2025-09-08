@@ -16,6 +16,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom CSS -->
     <link rel="stylesheet" href="styles.css">
 </head>
 <body class="p-4 md:p-8">
@@ -30,18 +31,21 @@
                 <p class="text-gray-600 mt-2">สำหรับพนักงาน Picking และหัวหน้างาน</p>
             </div>
             
+            <!-- Login Loading State -->
+            <div id="login-loading" class="hidden">
+                <div class="flex flex-col items-center justify-center">
+                    <div class="spinner mb-4"></div>
+                    <p class="text-gray-700">กำลังเข้าสู่ระบบ...</p>
+                </div>
+            </div>
+            
             <div id="login-form">
                 <div class="mb-4">
                     <label class="block text-gray-700 text-sm font-medium mb-2" for="email">อีเมล</label>
                     <input type="email" id="email" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="your@email.com">
                 </div>
-                <div class="mb-4">
-                    <label class="block text-gray-700 text-sm font-medium mb-2" for="password">รหัสผ่าน</label>
-                    <input type="password" id="password" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="••••••••">
-                </div>
-                <div class="mb-4 flex items-center">
-                    <input type="checkbox" id="remember-password" class="form-checkbox h-4 w-4 text-indigo-600">
-                    <label for="remember-password" class="ml-2 text-gray-700 text-sm">จำรหัสผ่าน</label>
+                <div id="login-error" class="hidden mb-4 p-3 bg-red-100 text-red-700 rounded-lg">
+                    อีเมลไม่ถูกต้อง หรือบัญชียังไม่ได้รับการอนุมัติ
                 </div>
                 <button id="login-btn" class="w-full bg-indigo-600 text-white font-bold py-3 px-4 rounded-lg shadow-md hover:bg-indigo-700 transition-colors">
                     เข้าสู่ระบบ
@@ -63,10 +67,6 @@
                 <div class="mb-4">
                     <label class="block text-gray-700 text-sm font-medium mb-2" for="reg-email">อีเมล</label>
                     <input type="email" id="reg-email" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="your@email.com">
-                </div>
-                <div class="mb-4">
-                    <label class="block text-gray-700 text-sm font-medium mb-2" for="reg-password">รหัสผ่าน</label>
-                    <input type="password" id="reg-password" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="••••••••">
                 </div>
                 <div class="mb-4">
                     <label class="block text-gray-700 text-sm font-medium mb-2" for="reg-role">บทบาท</label>
@@ -101,7 +101,7 @@
             </div>
         </div>
     </div>
-
+    
     <!-- Main Application -->
     <div id="main-app" class="hidden">
         <div class="container-wrapper max-w-7xl mx-auto">
@@ -132,12 +132,131 @@
                         class="bg-blue-800 text-white font-bold text-sm md:text-lg py-3 px-4 md:px-6 rounded-lg shadow-lg hover:bg-blue-900 transition-colors transform hover:scale-105">
                         เปลี่ยนบทบาท
                     </button>
+                    <button id="send-message-button" class="bg-blue-600 text-white font-bold text-sm md:text-lg py-3 px-4 md:px-6 rounded-lg shadow-lg hover:bg-blue-700 transition-colors transform hover:scale-105">
+                        <i class="fas fa-envelope mr-2"></i> ส่งข้อความ
+                    </button>
+                    <button id="dark-mode-toggle" class="bg-gray-800 text-white p-3 rounded-full shadow-md hover:bg-gray-700 transition-colors">
+                        <i class="fas fa-moon"></i>
+                    </button>
                     <button id="logout-main-btn"
                         class="bg-red-600 text-white font-bold text-sm md:text-lg py-3 px-4 md:px-6 rounded-lg shadow-lg hover:bg-red-700 transition-colors transform hover:scale-105">
                         <i class="fas fa-sign-out-alt mr-2"></i> ออกจากระบบ
                     </button>
                 </div>
             </div>
+            
+            <!-- System Stats Section -->
+            <section id="system-stats" class="mb-8 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-xl p-6 text-white shadow-lg">
+                <h2 class="text-xl font-bold mb-4">สถิติการใช้งานระบบ</h2>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <div class="bg-white bg-opacity-20 p-4 rounded-lg">
+                        <p class="text-sm opacity-80">ผู้ใช้งานทั้งหมด</p>
+                        <p class="text-2xl font-bold" id="total-users">0</p>
+                    </div>
+                    <div class="bg-white bg-opacity-20 p-4 rounded-lg">
+                        <p class="text-sm opacity-80">ผู้ใช้งานวันนี้</p>
+                        <p class="text-2xl font-bold" id="active-today">0</p>
+                    </div>
+                    <div class="bg-white bg-opacity-20 p-4 rounded-lg">
+                        <p class="text-sm opacity-80">การกระทำทั้งหมด</p>
+                        <p class="text-2xl font-bold" id="total-actions">0</p>
+                    </div>
+                    <div class="bg-white bg-opacity-20 p-4 rounded-lg">
+                        <p class="text-sm opacity-80">การกระทำวันนี้</p>
+                        <p class="text-2xl font-bold" id="actions-today">0</p>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Dashboard Summary Section -->
+            <section id="dashboard-summary" class="mb-8 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-xl p-6 text-white shadow-lg">
+                <h2 class="text-xl font-bold mb-4">สรุปข้อมูลประจำวัน</h2>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <div class="bg-white bg-opacity-20 p-4 rounded-lg">
+                        <p class="text-sm opacity-80">จำนวนพนักงาน</p>
+                        <p class="text-2xl font-bold" id="total-employees">0</p>
+                    </div>
+                    <div class="bg-white bg-opacity-20 p-4 rounded-lg">
+                        <p class="text-sm opacity-80">ความผิดพลาดทั้งหมด</p>
+                        <p class="text-2xl font-bold" id="total-errors">0</p>
+                    </div>
+                    <div class="bg-white bg-opacity-20 p-4 rounded-lg">
+                        <p class="text-sm opacity-80">อัตราความผิดพลาด</p>
+                        <p class="text-2xl font-bold" id="error-rate">0%</p>
+                    </div>
+                    <div class="bg-white bg-opacity-20 p-4 rounded-lg">
+                        <p class="text-sm opacity-80">พนักงานที่ทำผิดมากที่สุด</p>
+                        <p class="text-xl font-bold truncate" id="top-error-employee">-</p>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Interactive Dashboard Section -->
+            <section id="interactive-dashboard" class="mb-8 bg-white rounded-xl p-6 shadow-lg">
+                <h2 class="text-xl font-bold text-gray-800 mb-4">แดชบอร์ดแบบโต้ตอบ</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="bg-gray-100 p-4 rounded-lg">
+                        <h3 class="font-bold text-gray-800 mb-3">การกระจายความผิดพลาดตามประเภท</h3>
+                        <div class="chart-container h-64">
+                            <canvas id="errorDistributionChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="bg-gray-100 p-4 rounded-lg">
+                        <h3 class="font-bold text-gray-800 mb-3">อันดับพนักงานที่มีความผิดพลาดสูงสุด</h3>
+                        <div id="top-error-employees" class="space-y-2">
+                            <!-- Top error employees will be inserted here -->
+                        </div>
+                    </div>
+                </div>
+                <div class="mt-6 bg-gray-100 p-4 rounded-lg">
+                    <h3 class="font-bold text-gray-800 mb-3">เปรียบเทียบความผิดพลาดระหว่างพนักงาน</h3>
+                    <div class="chart-container h-64">
+                        <canvas id="employeeComparisonChart"></canvas>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Error Trends Section -->
+            <section id="error-trends" class="mb-8 bg-white rounded-xl p-6 shadow-lg">
+                <h2 class="text-xl font-bold text-gray-800 mb-4">แนวโน้มความผิดพลาด 7 วันล่าสุด</h2>
+                <div class="chart-container">
+                    <canvas id="errorTrendsChart"></canvas>
+                </div>
+            </section>
+            
+            <!-- Calendar Section -->
+            <section id="calendar-section" class="mb-8 bg-white rounded-xl p-6 shadow-lg">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-xl font-bold text-gray-800">ปฏิทินกิจกรรม</h2>
+                    <div class="flex space-x-2">
+                        <button id="prev-month" class="p-2 bg-gray-200 rounded-full hover:bg-gray-300 transition-colors">
+                            <i class="fas fa-chevron-left"></i>
+                        </button>
+                        <button id="next-month" class="p-2 bg-gray-200 rounded-full hover:bg-gray-300 transition-colors">
+                            <i class="fas fa-chevron-right"></i>
+                        </button>
+                    </div>
+                </div>
+                <div id="calendar-header" class="text-center font-bold text-lg mb-4"></div>
+                <div class="grid grid-cols-7 gap-1 mb-2">
+                    <div class="text-center font-medium text-gray-700 py-2">อา.</div>
+                    <div class="text-center font-medium text-gray-700 py-2">จ.</div>
+                    <div class="text-center font-medium text-gray-700 py-2">อ.</div>
+                    <div class="text-center font-medium text-gray-700 py-2">พ.</div>
+                    <div class="text-center font-medium text-gray-700 py-2">พฤ.</div>
+                    <div class="text-center font-medium text-gray-700 py-2">ศ.</div>
+                    <div class="text-center font-medium text-gray-700 py-2">ส.</div>
+                </div>
+                <div id="calendar-days" class="grid grid-cols-7 gap-1">
+                    <!-- Calendar days will be inserted here -->
+                </div>
+                <div class="mt-4">
+                    <h3 class="font-bold text-gray-800 mb-2">กิจกรรมวันนี้</h3>
+                    <ul id="today-events" class="space-y-2">
+                        <!-- Today's events will be inserted here -->
+                    </ul>
+                </div>
+            </section>
             
             <!-- Daily Tracking Section -->
             <section id="daily-view" class="mb-12">
@@ -169,7 +288,25 @@
                 
                 <!-- Log Section -->
                 <div class="mt-12 bg-gray-100 p-6 rounded-xl shadow-lg">
-                    <h3 class="text-xl font-bold text-gray-800 mb-4">บันทึกการแก้ไขล่าสุด</h3>
+                    <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-4">
+                        <h3 class="text-xl font-bold text-gray-800 mb-4 md:mb-0">บันทึกการแก้ไขล่าสุด</h3>
+                        <div class="flex flex-col md:flex-row gap-3 w-full md:w-auto">
+                            <div class="relative">
+                                <input type="text" id="log-search" placeholder="ค้นหาใน log..." 
+                                    class="w-full md:w-64 p-2 pl-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
+                            </div>
+                            <select id="log-filter" class="p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                <option value="all">ทุกประเภท</option>
+                                <option value="เพิ่ม">เพิ่มข้อมูล</option>
+                                <option value="ลด">ลดข้อมูล</option>
+                                <option value="อนุมัติ">อนุมัติผู้ใช้</option>
+                                <option value="ปฏิเสธ">ปฏิเสธผู้ใช้</option>
+                                <option value="เปลี่ยนบทบาท">เปลี่ยนบทบาท</option>
+                                <option value="รีเซ็ต">รีเซ็ตข้อมูล</option>
+                            </select>
+                        </div>
+                    </div>
                     <ul id="log-list" class="space-y-2 text-gray-700 max-h-60 overflow-y-auto">
                         <!-- Log entries will be inserted here -->
                     </ul>
@@ -298,8 +435,42 @@
                 </div>
             </div>
         </div>
+        
+        <!-- Message Modal -->
+        <div id="message-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden items-center justify-center p-4 z-50">
+            <div class="bg-white p-6 rounded-xl shadow-2xl max-w-md w-full">
+                <h3 class="text-xl font-bold text-gray-800 mb-4">ส่งข้อความถึงผู้ใช้</h3>
+                <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-medium mb-2" for="message-recipient">ผู้รับ</label>
+                    <select id="message-recipient" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <option value="">เลือกผู้รับ...</option>
+                    </select>
+                </div>
+                <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-medium mb-2" for="message-content">ข้อความ</label>
+                    <textarea id="message-content" rows="4" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="พิมพ์ข้อความของคุณที่นี่..."></textarea>
+                </div>
+                <div class="flex justify-end space-x-3">
+                    <button id="cancel-message-btn" class="px-4 py-2 bg-gray-300 text-gray-800 rounded-lg hover:bg-gray-400 transition-colors">
+                        ยกเลิก
+                    </button>
+                    <button id="send-message-btn" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+                        ส่งข้อความ
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Toast Notification Container -->
+        <div id="toast-container" class="fixed bottom-4 right-4 z-50 flex flex-col space-y-2"></div>
+        
+        <!-- Notification Container -->
+        <div id="notification-container" class="fixed top-4 right-4 z-50 flex flex-col space-y-2 max-w-xs">
+            <!-- Notifications will be inserted here -->
+        </div>
     </div>
-
+    
+    <!-- Custom JavaScript -->
     <script src="script.js"></script>
 </body>
 </html>
