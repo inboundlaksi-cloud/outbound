@@ -12,12 +12,13 @@
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-analytics-compat.js"></script>
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* CSS ทั้งหมด */
+        /* CSS ทั้งหมด (เหมือนเดิม) */
         body {
             font-family: 'Inter', sans-serif;
             background: linear-gradient(to bottom right, #84e8f8, #c4a1ff, #ffc5d9);
@@ -415,7 +416,7 @@
                 <div id="login-error" class="hidden mb-4 p-3 bg-red-100 text-red-700 rounded-lg">
                     อีเมลไม่ถูกต้อง หรือบัญชียังไม่ได้รับการอนุมัติ
                 </div>
-                <button id="login-btn" class="w-full bg-indigo-600 text-white font-bold py-3 px-4 rounded-lg shadow-md hover:bg-indigo-700 transition-colors">
+                <button id="login-btn" class="w-full bg-indigo-600 text-white font-bold py-3 px-4 rounded-lg shadow-md hover:bg-indigo-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
                     เข้าสู่ระบบ
                 </button>
                 <div class="mt-4 text-center">
@@ -450,7 +451,7 @@
                         <span class="ml-2 text-gray-700 text-sm">ฉันยอมรับ <a href="#" class="text-indigo-600 hover:underline">เงื่อนไขและข้อกำหนด</a></span>
                     </label>
                 </div>
-                <button id="register-btn" class="w-full bg-indigo-600 text-white font-bold py-3 px-4 rounded-lg shadow-md hover:bg-indigo-700 transition-colors">
+                <button id="register-btn" class="w-full bg-indigo-600 text-white font-bold py-3 px-4 rounded-lg shadow-md hover:bg-indigo-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
                     สมัครสมาชิก
                 </button>
                 <div class="mt-4 text-center">
@@ -669,7 +670,7 @@
                                 <option value="เพิ่ม">เพิ่มข้อมูล</option>
                                 <option value="ลด">ลดข้อมูล</option>
                                 <option value="อนุมัติ">อนุมัติผู้ใช้</option>
-                                <option value="ปฏิเสธ">ปฏิเสธผู้ใช้</option>
+                                <option value="ปฏิเสธ">ปฏิเสญผู้ใช้</option>
                                 <option value="เปลี่ยนบทบาท">เปลี่ยนบทบาท</option>
                                 <option value="รีเซ็ต">รีเซ็ตข้อมูล</option>
                             </select>
@@ -840,16 +841,23 @@
     
     <script>
         // JavaScript ทั้งหมด
-        // Firebase Configuration
-        const firebaseConfig = typeof __firebase_config !== 'undefined'
-            ? JSON.parse(__firebase_config)
-            : {}; // Fallback to an empty object if undefined
+        // Your web app's Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyCYSFu1MJWkEZjayF-e8-uiiX1caCc2PVI",
+            authDomain: "outbound-f9dff.firebaseapp.com",
+            projectId: "outbound-f9dff",
+            storageBucket: "outbound-f9dff.appspot.com",
+            messagingSenderId: "60363947536",
+            appId: "1:60363947536:web:79c6581d5a8c2b9c1bd495",
+            measurementId: "G-4SC1R235WY"
+        };
         
         // Initialize Firebase
         firebase.initializeApp(firebaseConfig);
+        firebase.analytics(); // Initialize Analytics
         const auth = firebase.auth();
         const db = firebase.firestore();
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+        const appId = firebaseConfig.projectId;
         
         // Names of error types
         const errorTypes = [
@@ -926,33 +934,146 @@
         let currentYear = new Date().getFullYear();
         let events = [];
         
-        
-        // Check auth state
-        auth.onAuthStateChanged(async (user) => {
-            const storedUserJSON = sessionStorage.getItem('loggedInUser');
-
-            if (storedUserJSON) {
-                // A user is logged in according to session storage. Show the app.
-                currentUser = JSON.parse(storedUserJSON);
+        // Function to initialize collections
+        async function initializeCollections() {
+            try {
+                console.log('Initializing collections...');
                 
-                loginSection.classList.add('hidden');
-                mainApp.classList.remove('hidden');
+                // Check if users collection exists and create admin user if needed
+                const usersRef = db.collection(`artifacts/${appId}/public/data/users`);
+                const adminEmail = "ADMIN@ADMIN.COM";
                 
-                userRoleIndex = allRoles.indexOf(currentUser.role);
-                if (userRoleIndex === -1) userRoleIndex = 0;
+                try {
+                    const adminQuery = await usersRef.where("email", "==", adminEmail).get();
+                    
+                    if (adminQuery.empty) {
+                        await usersRef.add({
+                            name: 'Admin',
+                            email: adminEmail,
+                            role: 'ADMIN',
+                            status: 'approved',
+                            createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                        });
+                        console.log('Admin user created');
+                    }
+                } catch (error) {
+                    console.error('Error checking/creating admin user:', error);
+                    // Continue even if this fails
+                }
                 
-                initializeApp();
-                toggleView('daily');
-            } else {
-                // No session stored, so show the login screen.
-                loginSection.classList.remove('hidden');
-                mainApp.classList.add('hidden');
-                loginForm.classList.remove('hidden');
-                registerForm.classList.add('hidden');
-                loginLoading.classList.add('hidden');
-                pendingApproval.classList.add('hidden');
+                // Check if employees collection exists
+                const employeesRef = db.collection(`artifacts/${appId}/public/data/employees`);
+                
+                try {
+                    const employeesSnapshot = await employeesRef.limit(1).get();
+                    
+                    if (employeesSnapshot.empty) {
+                        // Add sample employees
+                        await employeesRef.add({
+                            name: 'Sample Employee 1',
+                            errors: {
+                                wrongItem: { value: 0, modifier: 'N/A' },
+                                overPicked: { value: 0, modifier: 'N/A' },
+                                underPicked: { value: 0, modifier: 'N/A' },
+                                wrongBatch: { value: 0, modifier: 'N/A' },
+                                wrongRoute: { value: 0, modifier: 'N/A' },
+                                cleanliness: { value: 0, modifier: 'N/A' },
+                                correctPicks: { value: 0, modifier: 'N/A' }
+                            }
+                        });
+                        console.log('Sample employee created');
+                    }
+                } catch (error) {
+                    console.error('Error checking/creating employees:', error);
+                    // Continue even if this fails
+                }
+                
+                // Check if settings collection exists
+                const settingsRef = db.collection(`artifacts/${appId}/public/data/settings`);
+                
+                try {
+                    const billsDoc = await settingsRef.doc('monthlyBills').get();
+                    
+                    if (!billsDoc.exists) {
+                        await settingsRef.doc('monthlyBills').set({ value: 0 });
+                        console.log('Monthly bills setting created');
+                    }
+                } catch (error) {
+                    console.error('Error checking/creating settings:', error);
+                    // Continue even if this fails
+                }
+                
+                // Check if logs collection exists
+                const logsRef = db.collection(`artifacts/${appId}/public/data/logs`);
+                
+                try {
+                    const logsSnapshot = await logsRef.limit(1).get();
+                    
+                    if (logsSnapshot.empty) {
+                        await logsRef.add({
+                            modifierRole: 'SYSTEM',
+                            employeeName: 'System',
+                            action: 'System initialized',
+                            newValue: 'Ready',
+                            userName: 'System',
+                            userRole: 'SYSTEM',
+                            timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                        });
+                        console.log('Initial log entry created');
+                    }
+                } catch (error) {
+                    console.error('Error checking/creating logs:', error);
+                    // Continue even if this fails
+                }
+                
+                // Check if events collection exists
+                const eventsRef = db.collection(`artifacts/${appId}/public/data/events`);
+                
+                try {
+                    const eventsSnapshot = await eventsRef.limit(1).get();
+                    
+                    if (eventsSnapshot.empty) {
+                        await eventsRef.add({
+                            title: 'System Launch',
+                            date: new Date().toISOString().split('T')[0],
+                            time: '09:00',
+                            description: 'System initialization completed'
+                        });
+                        console.log('Sample event created');
+                    }
+                } catch (error) {
+                    console.error('Error checking/creating events:', error);
+                    // Continue even if this fails
+                }
+                
+                // Check if messages collection exists
+                const messagesRef = db.collection(`artifacts/${appId}/public/data/messages`);
+                
+                try {
+                    const messagesSnapshot = await messagesRef.limit(1).get();
+                    
+                    if (messagesSnapshot.empty) {
+                        await messagesRef.add({
+                            senderId: 'system',
+                            senderName: 'System',
+                            recipientId: 'admin',
+                            content: 'Welcome to the system!',
+                            timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+                            read: false
+                        });
+                        console.log('Sample message created');
+                    }
+                } catch (error) {
+                    console.error('Error checking/creating messages:', error);
+                    // Continue even if this fails
+                }
+                
+                console.log('All collections initialized successfully');
+            } catch (error) {
+                console.error('Error initializing collections:', error);
+                showToast('เกิดข้อผิดพลาดในการเริ่มต้นระบบ: ' + error.message, 'error');
             }
-        });
+        }
         
         // Login form submission
         document.getElementById('login-btn').addEventListener('click', async () => {
@@ -969,11 +1090,36 @@
             loginError.classList.add('hidden');
             
             try {
+                // ตรวจสอบว่าเป็น admin หรือไม่
+                if (email.toUpperCase() === "ADMIN@ADMIN.COM") {
+                    // สร้างข้อมูลผู้ใช้ admin ชั่วคราว
+                    const adminUser = {
+                        uid: 'admin',
+                        name: 'Admin',
+                        email: email,
+                        role: 'ADMIN',
+                        status: 'approved'
+                    };
+                    
+                    // เก็บข้อมูลผู้ใช้ใน sessionStorage
+                    sessionStorage.setItem('loggedInUser', JSON.stringify(adminUser));
+                    
+                    currentUser = adminUser;
+                    loginSection.classList.add('hidden');
+                    mainApp.classList.remove('hidden');
+                    userRoleIndex = allRoles.indexOf('ADMIN');
+                    
+                    initializeApp();
+                    toggleView('daily');
+                    showToast('เข้าสู่ระบบสำเร็จ', 'success');
+                    return;
+                }
+                
+                // ถ้าไม่ใช่ admin ให้ค้นหาใน Firestore
                 const usersRef = db.collection(`artifacts/${appId}/public/data/users`);
                 const querySnapshot = await usersRef.where("email", "==", email).get();
-
+                
                 if (querySnapshot.empty) {
-                    // FIX: Handle user not found case gracefully without throwing a console error
                     loginForm.classList.remove('hidden');
                     loginLoading.classList.add('hidden');
                     loginError.textContent = 'ไม่พบอีเมลนี้ในระบบ';
@@ -981,7 +1127,7 @@
                     showToast('เข้าสู่ระบบล้มเหลว: ไม่พบผู้ใช้', 'error');
                     return; 
                 }
-
+                
                 const userDoc = querySnapshot.docs[0];
                 const userData = userDoc.data();
                 
@@ -998,28 +1144,51 @@
                     initializeApp();
                     toggleView('daily');
                     showToast('เข้าสู่ระบบสำเร็จ', 'success');
-
                 } else if (userData.status === 'pending') {
                     loginForm.classList.add('hidden');
                     registerForm.classList.add('hidden');
                     loginLoading.classList.add('hidden');
                     pendingApproval.classList.remove('hidden');
                 } else {
-                    // This case handles 'rejected' or other statuses
                     loginForm.classList.remove('hidden');
                     loginLoading.classList.add('hidden');
                     loginError.textContent = 'บัญชีของคุณไม่ได้รับการอนุมัติ';
                     loginError.classList.remove('hidden');
                     showToast('เข้าสู่ระบบล้มเหลว', 'error');
                 }
-
             } catch (error) {
+                console.error("An unexpected login error occurred:", error);
+                
+                // ถ้าเกิดข้อผิดพลาดกับ Firestore ให้ตรวจสอบว่าเป็น admin หรือไม่
+                if (email.toUpperCase() === "ADMIN@ADMIN.COM") {
+                    // สร้างข้อมูลผู้ใช้ admin ชั่วคราว
+                    const adminUser = {
+                        uid: 'admin',
+                        name: 'Admin',
+                        email: email,
+                        role: 'ADMIN',
+                        status: 'approved'
+                    };
+                    
+                    // เก็บข้อมูลผู้ใช้ใน sessionStorage
+                    sessionStorage.setItem('loggedInUser', JSON.stringify(adminUser));
+                    
+                    currentUser = adminUser;
+                    loginSection.classList.add('hidden');
+                    mainApp.classList.remove('hidden');
+                    userRoleIndex = allRoles.indexOf('ADMIN');
+                    
+                    initializeApp();
+                    toggleView('daily');
+                    showToast('เข้าสู่ระบบสำเร็จ (โหมดออฟไลน์)', 'success');
+                    return;
+                }
+                
                 loginForm.classList.remove('hidden');
                 loginLoading.classList.add('hidden');
                 loginError.textContent = 'เกิดข้อผิดพลาดในการเข้าสู่ระบบ';
                 loginError.classList.remove('hidden');
                 showToast('เข้าสู่ระบบล้มเหลว', 'error');
-                console.error("An unexpected login error occurred:", error);
             }
         });
         
@@ -1096,30 +1265,47 @@
                 showToast('กำลังโหลดข้อมูล...', 'info');
                 
                 // Get employees from Firestore
-                const employeesSnapshot = await db.collection(`artifacts/${appId}/public/data/employees`).get();
-                if (!employeesSnapshot.empty) {
-                    employees = employeesSnapshot.docs.map(doc => {
-                        const data = doc.data();
-                        return {
-                            id: doc.id,
-                            name: data.name,
-                            errors: data.errors || {}
-                        };
-                    });
-                } else {
-                    // ไม่มีข้อมูลพนักงานในระบบ
+                try {
+                    const employeesSnapshot = await db.collection(`artifacts/${appId}/public/data/employees`).get();
+                    if (!employeesSnapshot.empty) {
+                        employees = employeesSnapshot.docs.map(doc => {
+                            const data = doc.data();
+                            return {
+                                id: doc.id,
+                                name: data.name,
+                                errors: data.errors || {}
+                            };
+                        });
+                    } else {
+                        // ไม่มีข้อมูลพนักงานในระบบ
+                        employees = [];
+                        showToast('ไม่พบข้อมูลพนักงานในระบบ', 'warning');
+                    }
+                } catch (error) {
+                    console.error('Error fetching employees:', error);
+                    showToast('ไม่สามารถโหลดข้อมูลพนักงานได้', 'warning');
                     employees = [];
-                    showToast('ไม่พบข้อมูลพนักงานในระบบ', 'warning');
                 }
                 
                 // Get monthly bills from Firestore
-                const billsDoc = await db.collection(`artifacts/${appId}/public/data/settings`).doc('monthlyBills').get();
-                monthlyBills = billsDoc.exists ? billsDoc.data().value : 0;
-                monthlyBillsInput.value = monthlyBills;
+                try {
+                    const billsDoc = await db.collection(`artifacts/${appId}/public/data/settings`).doc('monthlyBills').get();
+                    monthlyBills = billsDoc.exists ? billsDoc.data().value : 0;
+                    monthlyBillsInput.value = monthlyBills;
+                } catch (error) {
+                    console.error('Error fetching monthly bills:', error);
+                    monthlyBills = 0;
+                    monthlyBillsInput.value = 0;
+                }
                 
                 // Get logs from Firestore
-                const logsSnapshot = await db.collection(`artifacts/${appId}/public/data/logs`).orderBy('timestamp', 'desc').limit(50).get();
-                logs = logsSnapshot.docs.map(doc => doc.data());
+                try {
+                    const logsSnapshot = await db.collection(`artifacts/${appId}/public/data/logs`).orderBy('timestamp', 'desc').limit(50).get();
+                    logs = logsSnapshot.docs.map(doc => doc.data());
+                } catch (error) {
+                    console.error('Error fetching logs:', error);
+                    logs = [];
+                }
                 
                 updateUIBasedOnRole();
                 renderLogs();
@@ -1312,7 +1498,11 @@
                 showToast('บันทึกข้อมูลสำเร็จ', 'success');
             } catch (error) {
                 console.error('Error saving data:', error);
-                showToast('เกิดข้อผิดพลาดในการบันทึกข้อมูล', 'error');
+                if (error.code === 'permission-denied') {
+                    showToast('ไม่มีสิทธิ์ในการบันทึกข้อมูล กรุณาติดต่อผู้ดูแลระบบ', 'error');
+                } else {
+                    showToast('เกิดข้อผิดพลาดในการบันทึกข้อมูล', 'error');
+                }
             }
         }
         
@@ -1348,6 +1538,7 @@
                 showRealtimeNotification(logEntry);
             } catch (error) {
                 console.error('Error saving log:', error);
+                // Don't show toast for log errors to avoid spamming
             }
         }
         
@@ -1417,7 +1608,12 @@
         
         // Function to save employee name to Firestore
         async function saveEmployeeName(id, name) {
-            await db.collection(`artifacts/${appId}/public/data/employees`).doc(id).update({ name });
+            try {
+                await db.collection(`artifacts/${appId}/public/data/employees`).doc(id).update({ name });
+            } catch (error) {
+                console.error('Error saving employee name:', error);
+                showToast('ไม่สามารถบันทึกชื่อพนักงานได้', 'error');
+            }
         }
         
         // Function to toggle between different views
@@ -1843,10 +2039,14 @@
                 await batch.commit();
                 
                 // Clear logs
-                const logsSnapshot = await db.collection(`artifacts/${appId}/public/data/logs`).get();
-                logsSnapshot.forEach(doc => {
-                    doc.ref.delete();
-                });
+                try {
+                    const logsSnapshot = await db.collection(`artifacts/${appId}/public/data/logs`).get();
+                    logsSnapshot.forEach(doc => {
+                        doc.ref.delete();
+                    });
+                } catch (error) {
+                    console.error('Error clearing logs:', error);
+                }
                 
                 // Update UI
                 monthlyBillsInput.value = 0;
@@ -1988,7 +2188,7 @@
             
             let mostFrequentError = { name: 'ไม่มี', percentage: 0 };
             if (totalErrors > 0) {
-                const errorCounts = Object.entries(emp.errors).filter(([key]) => key !== 'correctPicks');
+                const errorCounts = Object.entries(employee.errors).filter(([key]) => key !== 'correctPicks');
                 const topError = errorCounts.reduce((max, [key, error]) => error.value > max.count ? { key, count: error.value } : max, { key: null, count: -1 });
                 const errorName = errorTypes.find(type => type.key === topError.key)?.name || topError.key;
                 const percentage = ((topError.count / totalErrors) * 100).toFixed(0);
@@ -2425,10 +2625,8 @@
                 // ดึงข้อมูลผู้ใช้ทั้งหมด
                 const usersSnapshot = await db.collection(`artifacts/${appId}/public/data/users`).get();
                 const totalUsers = usersSnapshot.size;
-
                 // Mock active users for today as we may not have permissions to userActivity collection
                 const activeToday = 1;
-
                 // ดึงข้อมูลการกระทำทั้งหมด
                 const actionsSnapshot = await db.collection(`artifacts/${appId}/public/data/logs`).get();
                 const totalActions = actionsSnapshot.size;
@@ -3040,53 +3238,70 @@
         
         // Function to initialize app
         function initializeApp() {
-            initializeData().then(async () => {
-                setupRealtimeUpdates();
-                updateDashboardSummary();
-                try {
-                    await fetchSystemStats();
-                } catch(e) {
-                    console.error("Could not fetch system stats:", e);
-                }
-                try {
-                    await fetchEvents();
-                } catch(e) {
-                    console.error("Could not fetch events:", e);
-                }
+            initializeCollections().then(async () => {
+                initializeData().then(async () => {
+                    setupRealtimeUpdates();
+                    updateDashboardSummary();
+                    try {
+                        await fetchSystemStats();
+                    } catch(e) {
+                        console.error("Could not fetch system stats:", e);
+                    }
+                    try {
+                        await fetchEvents();
+                    } catch(e) {
+                        console.error("Could not fetch events:", e);
+                    }
+                });
             });
         }
         
-        // Initialize app when DOM is loaded
-        document.addEventListener('DOMContentLoaded', async () => {
+        // Initialize app when DOM is loaded and handle auth state
+        document.addEventListener('DOMContentLoaded', () => {
             checkDarkModeSetting();
-            try {
-                 if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-                    await auth.signInWithCustomToken(__initial_auth_token);
-                } else if (!auth.currentUser) {
-                    await auth.signInAnonymously();
-                }
-                
-                // Add ADMIN user if not exists
-                const adminEmail = "ADMIN@ADMIN.COM";
-                const usersRef = db.collection(`artifacts/${appId}/public/data/users`);
-                const adminQuery = await usersRef.where("email", "==", adminEmail).get();
-
-                if (adminQuery.empty) {
-                    await usersRef.add({
-                        name: 'Admin',
-                        email: adminEmail,
-                        role: 'ADMIN',
-                        status: 'approved',
-                        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+            const loginBtn = document.getElementById('login-btn');
+            const registerBtn = document.getElementById('register-btn');
+            
+            // Enable buttons initially
+            loginBtn.disabled = false;
+            registerBtn.disabled = false;
+            
+            auth.onAuthStateChanged(user => {
+                if (user) {
+                    // User is signed in (anonymously or via session).
+                    const storedUserJSON = sessionStorage.getItem('loggedInUser');
+                    if (storedUserJSON) {
+                        // A "real" user is logged in via session.
+                        currentUser = JSON.parse(storedUserJSON);
+                        loginSection.classList.add('hidden');
+                        mainApp.classList.remove('hidden');
+                        userRoleIndex = allRoles.indexOf(currentUser.role);
+                        if (userRoleIndex === -1) userRoleIndex = 0; // Default to a safe role
+                        initializeApp();
+                        toggleView('daily');
+                    } else {
+                        // Only an anonymous user is present. Show login form.
+                        loginSection.classList.remove('hidden');
+                        mainApp.classList.add('hidden');
+                        loginForm.classList.remove('hidden');
+                        registerForm.classList.add('hidden');
+                        loginLoading.classList.add('hidden');
+                        pendingApproval.classList.add('hidden');
+                        
+                        // Initialize collections in the background
+                        initializeCollections();
+                    }
+                } else {
+                    // No user at all. Attempt anonymous sign-in. This will trigger onAuthStateChanged again.
+                    auth.signInAnonymously().catch(error => {
+                        console.error("Anonymous sign-in failed:", error);
+                        showToast("การเชื่อมต่อเพื่อยืนยันตัวตนล้มเหลว", "error");
+                        loginError.textContent = 'ไม่สามารถเชื่อมต่อกับบริการยืนยันตัวตนได้';
+                        loginError.classList.remove('hidden');
                     });
-                    console.log('Admin user created');
                 }
-            } catch (error) {
-                console.error("Initial sign-in failed:", error);
-                showToast("การเชื่อมต่อฐานข้อมูลล้มเหลว", "error");
-            }
+            });
         });
     </script>
 </body>
 </html>
-
