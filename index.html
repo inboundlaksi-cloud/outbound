@@ -196,41 +196,9 @@
         .calendar-day-header { font-weight: 600; }
         .calendar-day-body { text-align: right; font-size: 1.25rem; font-weight: 700; color: #ef4444; }
         
-        /* Dark Mode */
-        .dark-mode body { background-color: #111827; }
-        .dark-mode #main-app { background-color: #111827; }
-        .dark-mode .container-wrapper, .dark-mode #sidebar { background-color: #1f2937; }
-        .dark-mode #sidebar { border-right-color: #374151; }
-        .dark-mode .nav-link { color: #d1d5db; }
-        .dark-mode .nav-link:hover { background-color: #374151; color: #f9fafb; }
-        .dark-mode .nav-link.active { background-color: #4338ca; color: white; }
-        .dark-mode .text-gray-900, .dark-mode .text-gray-800, .dark-mode .text-gray-700 { color: #f9fafb !important; }
-        .dark-mode .text-gray-600, .dark-mode .text-gray-500 { color: #d1d5db !important; }
-        .dark-mode .bg-white { background-color: #1f2937 !important; }
-        .dark-mode .bg-gray-50 { background-color: #374151 !important; }
-        .dark-mode .bg-gray-100 { background-color: #374151 !important; }
-        .dark-mode .table-header { background-color: #374151; color: #d1d5db; }
-        .dark-mode table { background-color: #1f2937; }
-        .dark-mode th { background-color: #374151 !important; color: #f9fafb; }
-        .dark-mode td, .dark-mode .border-b, .dark-mode .border-b-2, .dark-mode .border-gray-200 { border-color: #374151; }
-        .dark-mode input, .dark-mode select { background-color: #374151; color: #f9fafb; border-color: #4b5563; }
-        .dark-mode input:focus, .dark-mode select:focus { border-color: #4f46e5; }
-        .dark-mode .from-blue-500 { background-image: linear-gradient(to right, #2b6cb0, #4c51bf); }
-        .dark-mode .to-indigo-600 { /* Handled by above */ }
-        .dark-mode .from-indigo-500 { background-image: linear-gradient(to right, #4c51bf, #553c9a); }
-        .dark-mode .to-purple-600 { /* Handled by above */ }
-        .dark-mode .from-blue-50 { background-color: #1f2937 !important; }
-        .dark-mode .to-indigo-100 { background-color: #1f2937 !important; }
-        .dark-mode .calendar-day { background-color: #374151; border-color: #4b5563; }
-        .dark-mode .calendar-day.other-month { background-color: #1f2937; color: #6b7280; }
-        .dark-mode .calendar-day.today { border-color: #818cf8; }
 
         /* Tab Navigation */
         .tab-button.active { color: #4f46e5; border-bottom-color: #4f46e5; }
-        .dark-mode .tab-button.active { color: #818cf8; border-bottom-color: #818cf8; }
-        .dark-mode .tab-button { color: #9ca3af; }
-        .dark-mode .tab-button:hover { color: #818cf8; }
-        .dark-mode .tab-container { border-bottom-color: #374151; }
         
         .tab-content { display: none; }
         .tab-content.active { display: block; }
@@ -239,31 +207,30 @@
         .prose h2, .prose h3, .prose h4 { margin-top: 1.5em; margin-bottom: 0.5em; font-weight: 600; }
         .prose ul { list-style-position: inside; }
         .prose li { margin-bottom: 0.25em; }
-        .dark-mode .prose { color: #d1d5db; }
     </style>
 </head>
 <body class="p-0 m-0">
     <!-- Login Section -->
-    <div id="login-section" class="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 p-4">
-        <div class="bg-white dark:bg-gray-800 p-8 rounded-2xl shadow-xl w-full max-w-md">
+    <div id="login-section" class="min-h-screen flex items-center justify-center bg-gray-50 p-4">
+        <div class="bg-white p-8 rounded-2xl shadow-xl w-full max-w-md">
             <div class="text-center mb-8">
-                <div class="mx-auto bg-indigo-100 dark:bg-indigo-900 w-16 h-16 rounded-full flex items-center justify-center mb-4">
-                    <i class="fas fa-warehouse text-indigo-600 dark:text-indigo-300 text-2xl"></i>
+                <div class="mx-auto bg-indigo-100 w-16 h-16 rounded-full flex items-center justify-center mb-4">
+                    <i class="fas fa-warehouse text-indigo-600 text-2xl"></i>
                 </div>
-                <h1 class="text-3xl font-bold text-gray-800 dark:text-gray-100">ระบบบันทึกสถิติ</h1>
-                <p class="text-gray-600 dark:text-gray-400 mt-2">สำหรับพนักงาน Picking และหัวหน้างาน</p>
+                <h1 class="text-3xl font-bold text-gray-800">ระบบบันทึกสถิติ</h1>
+                <p class="text-gray-600 mt-2">สำหรับพนักงาน Picking และหัวหน้างาน</p>
             </div>
             
             <div id="login-loading" class="hidden text-center"><div class="spinner mx-auto mb-4"></div><p>กำลังเข้าสู่ระบบ...</p></div>
             
             <div id="login-form">
                 <div class="mb-4">
-                    <label class="block text-gray-700 dark:text-gray-300 text-sm font-medium mb-2" for="email">อีเมล</label>
+                    <label class="block text-gray-700 text-sm font-medium mb-2" for="email">อีเมล</label>
                     <input type="email" id="email" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="your@email.com">
                 </div>
                 <div id="login-error" class="hidden mb-4 p-3 bg-red-100 text-red-700 rounded-lg"></div>
                 <button id="login-btn" class="w-full bg-indigo-600 text-white font-bold py-3 px-4 rounded-lg shadow-md hover:bg-indigo-700 transition-colors">เข้าสู่ระบบ</button>
-                <div class="mt-4 text-center"><p class="text-sm text-gray-600 dark:text-gray-400">ยังไม่มีบัญชี? <a href="#" id="show-register" class="text-indigo-600 hover:underline">สมัครสมาชิก</a></p></div>
+                <div class="mt-4 text-center"><p class="text-sm text-gray-600">ยังไม่มีบัญชี? <a href="#" id="show-register" class="text-indigo-600 hover:underline">สมัครสมาชิก</a></p></div>
             </div>
             
             <div id="register-form" class="hidden">
@@ -289,22 +256,19 @@
     <div id="main-app" class="hidden">
         <div id="sidebar-overlay" class="hidden md:hidden"></div>
         <!-- Sidebar Navigation -->
-        <aside id="sidebar" class="w-64 bg-white dark:bg-gray-800 shadow-md flex-shrink-0 flex flex-col">
-            <div class="p-4 border-b dark:border-gray-700 text-center">
-                <div class="mx-auto bg-indigo-100 dark:bg-indigo-900 w-12 h-12 rounded-full flex items-center justify-center mb-2">
-                    <i class="fas fa-warehouse text-indigo-600 dark:text-indigo-300 text-xl"></i>
+        <aside id="sidebar" class="w-64 bg-white shadow-md flex-shrink-0 flex flex-col">
+            <div class="p-4 border-b text-center">
+                <div class="mx-auto bg-indigo-100 w-12 h-12 rounded-full flex items-center justify-center mb-2">
+                    <i class="fas fa-warehouse text-indigo-600 text-xl"></i>
                 </div>
-                <h2 class="text-lg font-bold text-gray-800 dark:text-gray-100">ระบบบันทึกสถิติ</h2>
+                <h2 class="text-lg font-bold text-gray-800">ระบบบันทึกสถิติ</h2>
             </div>
-            <div id="user-profile-summary" class="p-4 border-b dark:border-gray-700">
-                <p id="user-id-display" class="text-sm font-medium text-gray-800 dark:text-gray-200 truncate"></p>
-                <p id="user-role-display" class="text-xs text-indigo-600 dark:text-indigo-400 font-semibold"></p>
+            <div id="user-profile-summary" class="p-4 border-b">
+                <p id="user-id-display" class="text-sm font-medium text-gray-800 truncate"></p>
+                <p id="user-role-display" class="text-xs text-indigo-600 font-semibold"></p>
             </div>
             <nav id="main-nav" class="flex-grow p-4 space-y-1"></nav>
-            <div class="p-4 border-t dark:border-gray-700 space-y-2">
-                 <button id="dark-mode-toggle" class="w-full flex items-center justify-center gap-2 bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200 font-medium py-2 px-4 rounded-lg transition-colors">
-                    <i class="fas fa-moon"></i><span id="dark-mode-text">โหมดกลางคืน</span>
-                </button>
+            <div class="p-4 border-t space-y-2">
                 <button id="logout-main-btn" class="w-full flex items-center justify-center gap-2 bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-lg transition-colors">
                     <i class="fas fa-sign-out-alt"></i>ออกจากระบบ
                 </button>
@@ -313,53 +277,53 @@
 
         <!-- Main Content -->
         <main class="flex-1 overflow-y-auto">
-            <button id="nav-toggle" class="md:hidden fixed top-4 left-4 z-50 bg-white dark:bg-gray-800 p-2 rounded-md shadow-md">
-                <i class="fas fa-bars text-gray-800 dark:text-gray-200"></i>
+            <button id="nav-toggle" class="md:hidden fixed top-4 left-4 z-50 bg-white p-2 rounded-md shadow-md">
+                <i class="fas fa-bars text-gray-800"></i>
             </button>
             <div class="p-4 md:p-8">
                 <header class="mb-8">
-                    <h1 id="page-title" class="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-1"></h1>
-                    <p id="page-subtitle" class="text-md text-gray-600 dark:text-gray-400 font-medium"></p>
+                    <h1 id="page-title" class="text-3xl md:text-4xl font-extrabold text-gray-900 mb-1"></h1>
+                    <p id="page-subtitle" class="text-md text-gray-600 font-medium"></p>
                 </header>
                 
                 <section id="dashboard-view" class="main-section">
                     <!-- Dashboard content here -->
                     <div id="system-stats" class="mb-8 grid grid-cols-2 md:grid-cols-4 gap-4"></div>
                     <div id="dashboard-summary" class="mb-8 grid grid-cols-2 md:grid-cols-4 gap-4"></div>
-                    <div id="interactive-dashboard" class="mb-8 bg-white dark:bg-gray-800 rounded-xl p-6 shadow-lg">
+                    <div id="interactive-dashboard" class="mb-8 bg-white rounded-xl p-6 shadow-lg">
                         <div class="grid grid-cols-1 lg:grid-cols-5 gap-6">
-                            <div class="lg:col-span-2 bg-gray-50 dark:bg-gray-700 p-4 rounded-lg"><h3 class="font-bold mb-3">การกระจายความผิดพลาด</h3><div class="chart-container h-64"><canvas id="errorDistributionChart"></canvas></div></div>
-                            <div class="lg:col-span-3 bg-gray-50 dark:bg-gray-700 p-4 rounded-lg"><h3 class="font-bold mb-3">5 อันดับพนักงานที่ผิดพลาดสูงสุด</h3><div id="top-error-employees" class="space-y-2"></div></div>
+                            <div class="lg:col-span-2 bg-gray-50 p-4 rounded-lg"><h3 class="font-bold mb-3">การกระจายความผิดพลาด</h3><div class="chart-container h-64"><canvas id="errorDistributionChart"></canvas></div></div>
+                            <div class="lg:col-span-3 bg-gray-50 p-4 rounded-lg"><h3 class="font-bold mb-3">5 อันดับพนักงานที่ผิดพลาดสูงสุด</h3><div id="top-error-employees" class="space-y-2"></div></div>
                         </div>
                     </div>
-                    <div id="error-trends" class="mb-8 bg-white dark:bg-gray-800 rounded-xl p-6 shadow-lg"><h2 class="text-xl font-bold mb-4">แนวโน้มความผิดพลาด 7 วันล่าสุด</h2><div class="chart-container"><canvas id="errorTrendsChart"></canvas></div></div>
+                    <div id="error-trends" class="mb-8 bg-white rounded-xl p-6 shadow-lg"><h2 class="text-xl font-bold mb-4">แนวโน้มความผิดพลาด 7 วันล่าสุด</h2><div class="chart-container"><canvas id="errorTrendsChart"></canvas></div></div>
                 </section>
 
                 <section id="daily-view" class="main-section hidden">
                     <div class="tab-container mb-6"><div class="tab-button active" data-tab="card-view"><i class="fas fa-id-card mr-2"></i> การ์ดพนักงาน</div><div class="tab-button" data-tab="table-view"><i class="fas fa-table mr-2"></i> ตารางข้อมูล</div><div class="tab-button" data-tab="log-view"><i class="fas fa-history mr-2"></i> ประวัติการแก้ไข</div></div>
                     <div id="card-view" class="tab-content active"><input type="text" id="employee-search-cards" placeholder="ค้นหาชื่อพนักงาน..." class="w-full p-3 mb-4 border rounded-lg"><div id="employee-cards-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div></div>
                     <div id="table-view" class="tab-content"><input type="text" id="employee-search-table" placeholder="ค้นหาชื่อพนักงาน..." class="w-full p-3 mb-4 border rounded-lg"><div class="table-container shadow-lg"><table class="min-w-full"><thead class="table-header"><tr><th class="p-3">ชื่อพนักงาน</th><th>จัดสินค้าผิด</th><th>จัดสินค้าเกิน</th><th>จัดสินค้าขาด</th><th>Batch ไม่ตรง</th><th>จัดไม่ตรง Route</th><th>ความสะอาด</th><th>จัดถูก (ครั้ง)</th><th>รวมผิด</th></tr></thead><tbody id="employee-table-body"></tbody></table></div></div>
-                    <div id="log-view" class="tab-content"><div class="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg"><div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-4"><h3 class="text-xl font-bold mb-4 md:mb-0">บันทึกการแก้ไขล่าสุด</h3><div class="flex flex-col md:flex-row gap-3 w-full md:w-auto"><div class="relative"><input type="text" id="log-search" placeholder="ค้นหาใน log..." class="w-full md:w-64 p-2 pl-10 border rounded-lg"><i class="fas fa-search absolute left-3 top-3 text-gray-400"></i></div><select id="log-filter" class="p-2 border rounded-lg"><option value="all">ทุกประเภท</option><option value="เพิ่ม">เพิ่มข้อมูล</option><option value="ลด">ลดข้อมูล</option><option value="อนุมัติ">อนุมัติผู้ใช้</option><option value="ปฏิเสธ">ปฏิเสธผู้ใช้</option><option value="เปลี่ยนบทบาท">เปลี่ยนบทบาท</option><option value="รีเซ็ต">รีเซ็ตข้อมูล</option></select></div></div><ul id="log-list" class="space-y-2 max-h-96 overflow-y-auto"></ul></div></div>
+                    <div id="log-view" class="tab-content"><div class="bg-white p-6 rounded-xl shadow-lg"><div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-4"><h3 class="text-xl font-bold mb-4 md:mb-0">บันทึกการแก้ไขล่าสุด</h3><div class="flex flex-col md:flex-row gap-3 w-full md:w-auto"><div class="relative"><input type="text" id="log-search" placeholder="ค้นหาใน log..." class="w-full md:w-64 p-2 pl-10 border rounded-lg"><i class="fas fa-search absolute left-3 top-3 text-gray-400"></i></div><select id="log-filter" class="p-2 border rounded-lg"><option value="all">ทุกประเภท</option><option value="เพิ่ม">เพิ่มข้อมูล</option><option value="ลด">ลดข้อมูล</option><option value="อนุมัติ">อนุมัติผู้ใช้</option><option value="ปฏิเสธ">ปฏิเสธผู้ใช้</option><option value="เปลี่ยนบทบาท">เปลี่ยนบทบาท</option><option value="รีเซ็ต">รีเซ็ตข้อมูล</option></select></div></div><ul id="log-list" class="space-y-2 max-h-96 overflow-y-auto"></ul></div></div>
                 </section>
 
                 <section id="kpi-view" class="main-section hidden">
-                     <div class="mb-8 flex flex-col md:flex-row items-start md:items-center gap-4 bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
+                     <div class="mb-8 flex flex-col md:flex-row items-start md:items-center gap-4 bg-white p-4 rounded-lg shadow">
                          <label for="monthly-bills" class="text-lg font-medium whitespace-nowrap">จำนวนบิลประจำเดือน:</label>
                          <input type="number" id="monthly-bills" min="0" value="0" class="flex-grow p-3 text-lg border rounded-lg">
                          <button id="reset-button" class="bg-pink-500 text-white font-bold text-lg py-3 px-6 rounded-lg shadow hover:bg-pink-600"><i class="fas fa-sync-alt mr-2"></i>รีเซ็ตข้อมูล</button>
                          <button id="export-button" class="bg-purple-500 text-white font-bold text-lg py-3 px-6 rounded-lg shadow hover:bg-purple-600"><i class="fas fa-file-export mr-2"></i>ส่งออก</button>
                      </div>
-                    <div class="table-container shadow-lg"><table class="min-w-full bg-white dark:bg-gray-800"><thead><tr class="table-header text-left"><th class="p-3">ชื่อพนักงาน</th><th class="text-center">รวมผิดพลาด</th><th class="text-center">อัตราผิดพลาด (%)</th><th class="text-center">อันดับ</th><th class="text-center">ผิดพลาดสูงสุด</th><th class="text-center">ดูรายละเอียด</th></tr></thead><tbody id="kpi-report-body" class="divide-y dark:divide-gray-700"></tbody></table></div>
+                    <div class="table-container shadow-lg"><table class="min-w-full bg-white"><thead><tr class="table-header text-left"><th class="p-3">ชื่อพนักงาน</th><th class="text-center">รวมผิดพลาด</th><th class="text-center">อัตราผิดพลาด (%)</th><th class="text-center">อันดับ</th><th class="text-center">ผิดพลาดสูงสุด</th><th class="text-center">ดูรายละเอียด</th></tr></thead><tbody id="kpi-report-body" class="divide-y"></tbody></table></div>
                 </section>
                 
                 <section id="calendar-view" class="main-section hidden">
-                    <div class="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg">
+                    <div class="bg-white p-6 rounded-xl shadow-lg">
                         <div class="flex justify-between items-center mb-4">
-                            <button id="prev-month-btn" class="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700"><i class="fas fa-chevron-left"></i></button>
+                            <button id="prev-month-btn" class="p-2 rounded-full hover:bg-gray-100"><i class="fas fa-chevron-left"></i></button>
                             <h2 id="calendar-month-year" class="text-xl font-bold"></h2>
-                            <button id="next-month-btn" class="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700"><i class="fas fa-chevron-right"></i></button>
+                            <button id="next-month-btn" class="p-2 rounded-full hover:bg-gray-100"><i class="fas fa-chevron-right"></i></button>
                         </div>
-                        <div class="grid grid-cols-7 gap-2 text-center font-semibold text-sm text-gray-600 dark:text-gray-400 mb-2">
+                        <div class="grid grid-cols-7 gap-2 text-center font-semibold text-sm text-gray-600 mb-2">
                             <div>อา.</div><div>จ.</div><div>อ.</div><div>พ.</div><div>พฤ.</div><div>ศ.</div><div>ส.</div>
                         </div>
                         <div id="calendar-grid"></div>
@@ -367,7 +331,7 @@
                 </section>
                 
                 <section id="ai-view" class="main-section hidden">
-                    <div id="ai-insights-container" class="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg">
+                    <div id="ai-insights-container" class="bg-white p-6 rounded-xl shadow-lg">
                          <div class="flex items-center mb-4">
                             <i class="fas fa-robot text-3xl text-indigo-500 mr-4"></i>
                             <h2 class="text-2xl font-bold">วิเคราะห์และสรุปผลโดย AI</h2>
@@ -381,34 +345,34 @@
                 <section id="detail-view" class="main-section hidden">
                      <h2 id="detail-employee-name" class="text-2xl md:text-3xl font-bold mb-6"></h2>
                      <div class="detail-view-container grid grid-cols-1 lg:grid-cols-2 gap-6">
-                         <div class="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg"><h3 class="text-xl font-bold mb-4">สรุปสถิติ</h3><div class="space-y-2"><p><span class="font-semibold">ความผิดพลาดทั้งหมด:</span> <span id="summary-total-errors" class="font-bold text-red-500"></span></p><p><span class="font-semibold">จัดถูกต้อง:</span> <span id="summary-correct-picks" class="font-bold text-green-500"></span></p><p><span class="font-semibold">อัตราความผิดพลาด:</span> <span id="summary-pps" class="font-bold text-purple-600"></span></p><p><span class="font-semibold">ประเภทผิดพลาดสูงสุด:</span> <span id="summary-most-frequent" class="font-bold text-purple-600"></span></p></div></div>
-                         <div class="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg"><h3 class="text-xl font-bold mb-4">สัดส่วนความผิดพลาด</h3><div class="chart-container h-64"><canvas id="errorBreakdownChart"></canvas></div></div>
-                         <div class="lg:col-span-2 bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg"><h3 class="text-xl font-bold mb-4">ประวัติการแก้ไขส่วนตัว</h3><ul id="employee-history-log" class="space-y-2 max-h-60 overflow-y-auto"></ul></div>
+                         <div class="bg-white p-6 rounded-xl shadow-lg"><h3 class="text-xl font-bold mb-4">สรุปสถิติ</h3><div class="space-y-2"><p><span class="font-semibold">ความผิดพลาดทั้งหมด:</span> <span id="summary-total-errors" class="font-bold text-red-500"></span></p><p><span class="font-semibold">จัดถูกต้อง:</span> <span id="summary-correct-picks" class="font-bold text-green-500"></span></p><p><span class="font-semibold">อัตราความผิดพลาด:</span> <span id="summary-pps" class="font-bold text-purple-600"></span></p><p><span class="font-semibold">ประเภทผิดพลาดสูงสุด:</span> <span id="summary-most-frequent" class="font-bold text-purple-600"></span></p></div></div>
+                         <div class="bg-white p-6 rounded-xl shadow-lg"><h3 class="text-xl font-bold mb-4">สัดส่วนความผิดพลาด</h3><div class="chart-container h-64"><canvas id="errorBreakdownChart"></canvas></div></div>
+                         <div class="lg:col-span-2 bg-white p-6 rounded-xl shadow-lg"><h3 class="text-xl font-bold mb-4">ประวัติการแก้ไขส่วนตัว</h3><ul id="employee-history-log" class="space-y-2 max-h-60 overflow-y-auto"></ul></div>
                      </div>
                 </section>
 
                 <section id="approval-view" class="main-section hidden">
-                    <div class="table-container shadow-lg"><table class="min-w-full bg-white dark:bg-gray-800"><thead><tr class="table-header text-left"><th class="p-3">ชื่อผู้ใช้</th><th>อีเมล</th><th>บทบาท</th><th>สถานะ</th><th>วันที่สมัคร</th><th class="text-center">ดำเนินการ</th></tr></thead><tbody id="approval-table-body" class="divide-y dark:divide-gray-700"></tbody></table></div>
+                    <div class="table-container shadow-lg"><table class="min-w-full bg-white"><thead><tr class="table-header text-left"><th class="p-3">ชื่อผู้ใช้</th><th>อีเมล</th><th>บทบาท</th><th>สถานะ</th><th>วันที่สมัคร</th><th class="text-center">ดำเนินการ</th></tr></thead><tbody id="approval-table-body" class="divide-y"></tbody></table></div>
                 </section>
 
                 <section id="management-view" class="main-section hidden">
                     <div class="mb-6"><input type="text" id="employee-management-search" placeholder="ค้นหาชื่อหรืออีเมล..." class="w-full md:w-1/3 p-3 text-lg border rounded-lg"></div>
-                    <div class="table-container shadow-lg"><table class="min-w-full bg-white dark:bg-gray-800"><thead><tr class="table-header text-left"><th class="p-3">ชื่อพนักงาน</th><th>อีเมล</th><th class="text-center">ตำแหน่ง</th><th class="text-center">สถานะ</th><th class="text-center">ความผิดพลาดรวม</th><th class="text-center">จัดการ</th></tr></thead><tbody id="employee-management-body" class="divide-y dark:divide-gray-700"></tbody></table></div>
+                    <div class="table-container shadow-lg"><table class="min-w-full bg-white"><thead><tr class="table-header text-left"><th class="p-3">ชื่อพนักงาน</th><th>อีเมล</th><th class="text-center">ตำแหน่ง</th><th class="text-center">สถานะ</th><th class="text-center">ความผิดพลาดรวม</th><th class="text-center">จัดการ</th></tr></thead><tbody id="employee-management-body" class="divide-y"></tbody></table></div>
                 </section>
                 
                 <section id="profile-view" class="main-section hidden">
-                    <div class="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-lg max-w-4xl mx-auto">
+                    <div class="bg-white rounded-xl p-6 shadow-lg max-w-4xl mx-auto">
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                             <div>
                                 <div class="flex items-center mb-4">
                                     <div class="bg-indigo-100 w-20 h-20 rounded-full flex items-center justify-center mr-4"><i class="fas fa-user text-indigo-600 text-3xl"></i></div>
                                     <div>
                                         <h3 id="profile-name" class="text-2xl font-bold"></h3>
-                                        <p id="profile-email" class="text-sm text-gray-600 dark:text-gray-400"></p>
+                                        <p id="profile-email" class="text-sm text-gray-600"></p>
                                         <p id="profile-role" class="font-medium text-indigo-600"></p>
                                     </div>
                                 </div>
-                                <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
+                                <div class="bg-gray-50 rounded-lg p-4">
                                     <h4 class="text-lg font-bold mb-3">แก้ไขชื่อ</h4>
                                     <div class="flex"><input type="text" id="profile-name-input" class="flex-grow px-4 py-2 border rounded-l-lg"><button id="save-profile-name-btn" class="bg-blue-600 text-white px-4 py-2 rounded-r-lg hover:bg-blue-700">บันทึก</button></div>
                                 </div>
@@ -426,13 +390,13 @@
                 </section>
                 
                  <section id="settings-view" class="main-section hidden">
-                    <div class="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg max-w-2xl mx-auto">
+                    <div class="bg-white p-6 rounded-xl shadow-lg max-w-2xl mx-auto">
                         <h2 class="text-2xl font-bold mb-4">ตั้งค่าระบบ</h2>
                         <div class="space-y-4">
                             <div>
-                                <label for="gemini-api-key" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Gemini API Key</label>
-                                <input type="password" id="gemini-api-key" class="mt-1 block w-full px-3 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
-                                <p class="mt-2 text-xs text-gray-500 dark:text-gray-400">API Key ของคุณจะถูกบันทึกไว้ในเบราว์เซอร์นี้เท่านั้น</p>
+                                <label for="gemini-api-key" class="block text-sm font-medium text-gray-700">Gemini API Key</label>
+                                <input type="password" id="gemini-api-key" class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                                <p class="mt-2 text-xs text-gray-500">API Key ของคุณจะถูกบันทึกไว้ในเบราว์เซอร์นี้เท่านั้น</p>
                             </div>
                             <button id="save-settings-btn" class="bg-indigo-600 text-white font-bold py-2 px-4 rounded-lg shadow-md hover:bg-indigo-700 transition-colors">บันทึก</button>
                         </div>
@@ -445,11 +409,11 @@
 
     <!-- Modals -->
     <div id="employee-edit-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden items-center justify-center p-4 z-50">
-        <div class="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-2xl max-w-md w-full">
+        <div class="bg-white p-6 rounded-xl shadow-2xl max-w-md w-full">
             <h3 class="text-xl font-bold mb-4">แก้ไขข้อมูลพนักงาน</h3>
-            <div class="mb-4"><label class="block text-sm font-medium mb-2">ชื่อพนักงาน</label><input type="text" id="edit-employee-name" class="w-full px-4 py-3 border rounded-lg bg-gray-100 dark:bg-gray-700" readonly></div>
+            <div class="mb-4"><label class="block text-sm font-medium mb-2">ชื่อพนักงาน</label><input type="text" id="edit-employee-name" class="w-full px-4 py-3 border rounded-lg bg-gray-100" readonly></div>
             <div class="mb-6"><label class="block text-sm font-medium mb-2">ตำแหน่ง</label><select id="edit-employee-role" class="w-full px-4 py-3 border rounded-lg"><option value="PICKING">PICKING</option><option value="CHECKER">CHECKER</option><option value="SENIOR">SENIOR</option><option value="SUPERVISOR">SUPERVISOR</option><option value="ADMIN">ADMIN</option></select></div>
-            <div class="flex justify-end space-x-3"><button id="cancel-edit-btn" class="px-4 py-2 bg-gray-300 dark:bg-gray-600 rounded-lg hover:bg-gray-400">ยกเลิก</button><button id="save-edit-btn" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">บันทึก</button></div>
+            <div class="flex justify-end space-x-3"><button id="cancel-edit-btn" class="px-4 py-2 bg-gray-300 rounded-lg hover:bg-gray-400">ยกเลิก</button><button id="save-edit-btn" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">บันทึก</button></div>
         </div>
     </div>
     <div id="toast-container" class="fixed bottom-4 right-4 z-[1002] flex flex-col space-y-2"></div>
@@ -792,14 +756,6 @@
         
         // --- Event Listeners ---
         document.addEventListener('DOMContentLoaded', () => {
-            // Dark Mode
-            const isDarkMode = localStorage.getItem('darkMode') === 'true';
-            if (isDarkMode) document.body.classList.add('dark-mode');
-            document.getElementById('dark-mode-toggle').addEventListener('click', () => {
-                document.body.classList.toggle('dark-mode');
-                localStorage.setItem('darkMode', document.body.classList.contains('dark-mode'));
-            });
-
             // Auth State
             auth.onAuthStateChanged(user => {
                 const storedUserJSON = sessionStorage.getItem('loggedInUser');
@@ -1334,4 +1290,5 @@ ${JSON.stringify(simplifiedData, null, 2)}
     </script>
 </body>
 </html>
+
 
