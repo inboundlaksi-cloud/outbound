@@ -21,7 +21,7 @@
         /* CSS ทั้งหมด */
         body {
             font-family: 'Sarabun', sans-serif;
-            background-color: #FEF9FB; /* Soft Pinkish Background */
+            background-color: #ffffff; /* White Background */
         }
 
         .container-wrapper {
@@ -35,7 +35,7 @@
         #main-app {
             display: flex;
             height: 100vh;
-            background-color: #FEF9FB; /* Soft Pinkish Background */
+            background-color: #ffffff; /* White Background */
         }
         
         #sidebar {
@@ -196,7 +196,6 @@
         .calendar-day-header { font-weight: 600; }
         .calendar-day-body { text-align: right; font-size: 1.25rem; font-weight: 700; color: #ef4444; }
         
-
         /* Tab Navigation */
         .tab-button.active { color: #4f46e5; border-bottom-color: #4f46e5; }
         
@@ -238,7 +237,7 @@
                 <div class="mb-4"><label class="block text-sm font-medium mb-2" for="reg-nickname">ชื่อเล่น</label><input type="text" id="reg-nickname" class="w-full px-4 py-3 border rounded-lg" placeholder="ชื่อเล่น"></div>
                 <div class="mb-4"><label class="block text-sm font-medium mb-2" for="reg-email">อีเมล</label><input type="email" id="reg-email" class="w-full px-4 py-3 border rounded-lg" placeholder="your@email.com"></div>
                 <div class="mb-4"><label class="block text-sm font-medium mb-2" for="reg-role">บทบาท</label><select id="reg-role" class="w-full px-4 py-3 border rounded-lg"><option value="PICKING">พนักงาน Picking</option><option value="CHECKER">พนักงาน Checker</option><option value="SENIOR">พนักงาน Senior</option></select></div>
-                <div class="mb-6"><label class="flex items-center"><input type="checkbox" id="reg-terms" class="form-checkbox h-4 w-4"><span class="ml-2 text-sm">ฉันยอมรับ <a href="#" class="text-indigo-600 hover:underline">เงื่อนไข</a></span></label></div>
+                <div class="mb-6"><label class="flex items-center"><input type="checkbox" id="reg-terms" class="form-checkbox h-4 w-4"><span class="ml-2 text-sm">ฉันยอมรับ <a href="#" id="show-terms-link" class="text-indigo-600 hover:underline">เงื่อนไขและข้อกำหนด</a></span></label></div>
                 <button id="register-btn" class="w-full bg-indigo-600 text-white font-bold py-3 rounded-lg hover:bg-indigo-700">สมัครสมาชิก</button>
                 <div class="mt-4 text-center"><p class="text-sm">มีบัญชีอยู่แล้ว? <a href="#" id="show-login" class="text-indigo-600 hover:underline">เข้าสู่ระบบ</a></p></div>
             </div>
@@ -287,7 +286,7 @@
                 </header>
                 
                 <section id="dashboard-view" class="main-section">
-                    <!-- Dashboard content here -->
+                    <div id="latest-announcement-banner" class="mb-8"></div>
                     <div id="system-stats" class="mb-8 grid grid-cols-2 md:grid-cols-4 gap-4"></div>
                     <div id="dashboard-summary" class="mb-8 grid grid-cols-2 md:grid-cols-4 gap-4"></div>
                     <div id="interactive-dashboard" class="mb-8 bg-white rounded-xl p-6 shadow-lg">
@@ -329,7 +328,25 @@
                         <div id="calendar-grid"></div>
                     </div>
                 </section>
+
+                <section id="announcements-view" class="main-section hidden">
+                    <div class="flex justify-end mb-4">
+                        <button id="create-announcement-btn" class="hidden bg-indigo-600 text-white font-bold py-2 px-4 rounded-lg shadow-md hover:bg-indigo-700 transition-colors"><i class="fas fa-plus mr-2"></i>สร้างประกาศใหม่</button>
+                    </div>
+                    <div id="announcements-list" class="space-y-4">
+                        <!-- Announcements will be loaded here -->
+                    </div>
+                </section>
                 
+                <section id="notifications-view" class="main-section hidden">
+                    <div class="flex justify-end mb-4">
+                        <button id="mark-all-read-btn" class="bg-indigo-100 text-indigo-700 text-sm font-bold py-2 px-4 rounded-lg hover:bg-indigo-200 transition-colors"><i class="fas fa-check-double mr-2"></i>ทำเครื่องหมายว่าอ่านทั้งหมด</button>
+                    </div>
+                    <div id="notifications-list" class="space-y-3">
+                        <!-- Notifications will be loaded here -->
+                    </div>
+                </section>
+
                 <section id="ai-view" class="main-section hidden">
                     <div id="ai-insights-container" class="bg-white p-6 rounded-xl shadow-lg">
                          <div class="flex items-center mb-4">
@@ -416,6 +433,43 @@
             <div class="flex justify-end space-x-3"><button id="cancel-edit-btn" class="px-4 py-2 bg-gray-300 rounded-lg hover:bg-gray-400">ยกเลิก</button><button id="save-edit-btn" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">บันทึก</button></div>
         </div>
     </div>
+    <div id="announcement-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden items-center justify-center p-4 z-50">
+        <div class="bg-white p-6 rounded-xl shadow-2xl max-w-lg w-full">
+            <h3 class="text-xl font-bold mb-4">สร้างประกาศใหม่</h3>
+            <div class="mb-4"><label class="block text-sm font-medium mb-2">หัวข้อ</label><input type="text" id="announcement-title" class="w-full px-4 py-2 border rounded-lg"></div>
+            <div class="mb-6"><label class="block text-sm font-medium mb-2">เนื้อหา</label><textarea id="announcement-content" rows="5" class="w-full px-4 py-2 border rounded-lg"></textarea></div>
+            <div class="flex justify-end space-x-3"><button id="cancel-announcement-btn" class="px-4 py-2 bg-gray-300 rounded-lg hover:bg-gray-400">ยกเลิก</button><button id="post-announcement-btn" class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700">ประกาศ</button></div>
+        </div>
+    </div>
+     <div id="calendar-detail-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden items-center justify-center p-4 z-50">
+        <div class="bg-white p-6 rounded-xl shadow-2xl max-w-2xl w-full">
+            <div class="flex justify-between items-center mb-4">
+                <h3 id="calendar-modal-title" class="text-xl font-bold"></h3>
+                <button id="close-calendar-modal-btn" class="text-gray-500 hover:text-gray-800">&times;</button>
+            </div>
+            <ul id="calendar-modal-log-list" class="space-y-2 max-h-96 overflow-y-auto"></ul>
+        </div>
+    </div>
+     <div id="terms-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden items-center justify-center p-4 z-50">
+        <div class="bg-white p-6 rounded-xl shadow-2xl max-w-2xl w-full">
+            <h3 class="text-xl font-bold mb-4">ข้อตกลงและเงื่อนไขการใช้งาน</h3>
+            <div class="prose max-w-none text-sm max-h-96 overflow-y-auto">
+                <h4>1. การยอมรับข้อตกลง</h4>
+                <p>โดยการสมัครและเข้าใช้งานระบบบันทึกสถิติความผิดพลาดนี้ ท่านยอมรับและตกลงที่จะปฏิบัติตามข้อตกลงและเงื่อนไขการใช้งานทั้งหมดที่ระบุไว้ ณ ที่นี้ หากท่านไม่ยอมรับข้อตกลงเหล่านี้ กรุณาอย่าเข้าใช้งานระบบ</p>
+                <h4>2. วัตถุประสงค์ของระบบ</h4>
+                <p>ระบบนี้ถูกสร้างขึ้นเพื่อวัตถุประสงค์ในการบันทึก ติดตาม และวิเคราะห์ข้อมูลความผิดพลาดในการจัดสินค้าของพนักงาน เพื่อนำไปสู่การปรับปรุงประสิทธิภาพและลดข้อผิดพลาดในการดำเนินงาน</p>
+                <h4>3. การใช้งานบัญชี</h4>
+                <p>ท่านมีหน้าที่รับผิดชอบในการรักษารายละเอียดบัญชีของท่านให้เป็นความลับ การกระทำใดๆ ที่เกิดขึ้นภายใต้บัญชีของท่านจะถือเป็นการกระทำของท่านเอง ท่านตกลงที่จะแจ้งให้ผู้ดูแลระบบทราบทันทีเมื่อมีการใช้งานบัญชีของท่านโดยไม่ได้รับอนุญาต</p>
+                 <h4>4. ข้อมูลส่วนบุคคล</h4>
+                <p>เราจะเก็บรวบรวมข้อมูลของท่าน เช่น ชื่อ, อีเมล, และข้อมูลสถิติการทำงาน เพื่อใช้ในการดำเนินงานของระบบเท่านั้น เราจะไม่เปิดเผยข้อมูลของท่านแก่บุคคลภายนอกโดยไม่ได้รับความยินยอมจากท่าน</p>
+                 <h4>5. ข้อจำกัดความรับผิดชอบ</h4>
+                <p>ข้อมูลที่แสดงผลในระบบมาจากข้อมูลที่ผู้ใช้งานได้บันทึกเข้ามา ผู้พัฒนาระบบไม่รับประกันความถูกต้องสมบูรณ์ของข้อมูล และไม่รับผิดชอบต่อความเสียหายใดๆ ที่อาจเกิดขึ้นจากการใช้ข้อมูลในระบบนี้</p>
+            </div>
+            <div class="flex justify-end mt-4">
+                <button id="close-terms-modal-btn" class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700">เข้าใจแล้ว</button>
+            </div>
+        </div>
+    </div>
     <div id="toast-container" class="fixed bottom-4 right-4 z-[1002] flex flex-col space-y-2"></div>
     
     <script>
@@ -440,6 +494,7 @@
         let employees = [];
         let monthlyBills = 0;
         let logs = [];
+        let announcements = [];
         let currentUser = null;
         let chartInstances = {};
         let calendarDate = new Date();
@@ -486,6 +541,7 @@
         // --- Navigation ---
         const navItems = [
             { id: 'dashboard', text: 'ภาพรวมระบบ', icon: 'fa-chart-pie', roles: ['PICKING', 'CHECKER', 'SENIOR', 'SUPERVISOR', 'ADMIN'] },
+            { id: 'announcements', text: 'ประกาศ', icon: 'fa-bullhorn', roles: ['PICKING', 'CHECKER', 'SENIOR', 'SUPERVISOR', 'ADMIN'] },
             { id: 'daily', text: 'ประเมินประจำวัน', icon: 'fa-calendar-day', roles: ['PICKING', 'CHECKER', 'SENIOR', 'SUPERVISOR', 'ADMIN'] },
             { id: 'kpi', text: 'รายงานสรุป KPI', icon: 'fa-chart-line', roles: ['SENIOR', 'SUPERVISOR', 'ADMIN'] },
             { id: 'calendar', text: 'ปฏิทิน', icon: 'fa-calendar-alt', roles: ['SENIOR', 'SUPERVISOR', 'ADMIN'] },
@@ -539,6 +595,7 @@
                 case 'calendar': renderCalendarView(); break;
                 case 'ai': renderAiView(); break;
                 case 'settings': renderSettingsView(); break;
+                case 'announcements': renderAnnouncementsView(); break;
                 case 'detail': /* Handled by button clicks */ break;
             }
 
@@ -595,7 +652,7 @@
             const email = document.getElementById('reg-email').value;
             const role = document.getElementById('reg-role').value;
             if (!name || !nickname || !email || !document.getElementById('reg-terms').checked) {
-                return showToast('กรุณากรอกข้อมูลให้ครบถ้วน', 'error');
+                return showToast('กรุณากรอกข้อมูลให้ครบถ้วนและยอมรับเงื่อนไข', 'error');
             }
             try {
                 const usersRef = db.collection(`artifacts/${appId}/public/data/users`);
@@ -654,6 +711,10 @@
                 // Fetch logs for calendar and log views
                 const logsSnapshot = await db.collection(`artifacts/${appId}/public/data/logs`).orderBy('timestamp', 'desc').get();
                 logs = logsSnapshot.docs.map(doc => doc.data());
+                
+                // Fetch announcements
+                const announcementsSnapshot = await db.collection(`artifacts/${appId}/public/data/announcements`).orderBy('timestamp', 'desc').get();
+                announcements = announcementsSnapshot.docs.map(doc => doc.data());
 
 
                 showToast('ข้อมูลอัปเดตล่าสุดแล้ว', 'success');
@@ -664,6 +725,7 @@
         };
 
         const renderDashboard = () => {
+            renderLatestAnnouncementOnDashboard();
             renderSystemStats();
             renderDashboardSummary();
             renderErrorDistributionChart();
@@ -775,6 +837,8 @@
             document.getElementById('show-login').addEventListener('click', e => { e.preventDefault(); registerForm.classList.add('hidden'); loginForm.classList.remove('hidden'); });
             document.getElementById('logout-btn').addEventListener('click', handleLogout);
             document.getElementById('logout-main-btn').addEventListener('click', handleLogout);
+            document.getElementById('show-terms-link').addEventListener('click', (e) => { e.preventDefault(); document.getElementById('terms-modal').classList.remove('hidden') });
+            document.getElementById('close-terms-modal-btn').addEventListener('click', () => document.getElementById('terms-modal').classList.add('hidden'));
 
             // Mobile Nav
             document.getElementById('nav-toggle').addEventListener('click', () => {
@@ -807,6 +871,7 @@
                 calendarDate.setMonth(calendarDate.getMonth() + 1);
                 renderCalendarView();
             });
+            document.getElementById('close-calendar-modal-btn').addEventListener('click', () => document.getElementById('calendar-detail-modal').classList.add('hidden'));
 
             // Settings
             document.getElementById('save-settings-btn').addEventListener('click', () => {
@@ -822,6 +887,11 @@
 
             // Export Button
             document.getElementById('export-button').addEventListener('click', exportKpiReport);
+
+            // Announcement Modal
+            document.getElementById('create-announcement-btn').addEventListener('click', () => document.getElementById('announcement-modal').classList.remove('hidden'));
+            document.getElementById('cancel-announcement-btn').addEventListener('click', () => document.getElementById('announcement-modal').classList.add('hidden'));
+            document.getElementById('post-announcement-btn').addEventListener('click', postNewAnnouncement);
         });
         
         function renderDailyTable() {
@@ -852,16 +922,16 @@
                 errorTypes.forEach(type => {
                     const count = emp.errors[type.key]?.value || 0;
                     if(type.key !== 'correctPicks') totalErrors += count;
-                    errorCells += `<td class="p-2 border-b dark:border-gray-700 text-center"><div class="error-cell"><button data-id="${emp.id}" data-type="${type.key}" class="minus-error-btn bg-red-100 text-red-600 rounded-full w-5 h-5 md:w-6 md:h-6 font-bold flex items-center justify-center hover:bg-red-200">-</button><span class="font-bold text-base md:text-lg w-6 md:w-8 text-center">${count}</span><button data-id="${emp.id}" data-type="${type.key}" class="add-error-btn bg-green-100 text-green-600 rounded-full w-5 h-5 md:w-6 md:h-6 font-bold flex items-center justify-center hover:bg-green-200">+</button></div></td>`;
+                    errorCells += `<td class="p-2 border-b"><div class="error-cell"><button data-id="${emp.id}" data-type="${type.key}" class="minus-error-btn bg-red-100 text-red-600 rounded-full w-5 h-5 md:w-6 md:h-6 font-bold flex items-center justify-center hover:bg-red-200">-</button><span class="font-bold text-base md:text-lg w-6 md:w-8 text-center">${count}</span><button data-id="${emp.id}" data-type="${type.key}" class="add-error-btn bg-green-100 text-green-600 rounded-full w-5 h-5 md:w-6 md:h-6 font-bold flex items-center justify-center hover:bg-green-200">+</button></div></td>`;
                 });
                 
                 const correctPicks = emp.errors.correctPicks?.value || 0;
 
                 row.innerHTML = `
-                    <td class="p-3 border-b dark:border-gray-700 font-medium">${emp.name}</td>
+                    <td class="p-3 border-b font-medium">${emp.name}</td>
                     ${errorCells}
-                    <td class="p-2 border-b dark:border-gray-700 text-center"><div class="error-cell"><button data-id="${emp.id}" data-type="correctPicks" class="minus-error-btn bg-red-100 text-red-600 rounded-full w-5 h-5 md:w-6 md:h-6 font-bold flex items-center justify-center hover:bg-red-200">-</button><span class="font-bold text-base md:text-lg w-6 md:w-8 text-center">${correctPicks}</span><button data-id="${emp.id}" data-type="correctPicks" class="add-error-btn bg-green-100 text-green-600 rounded-full w-5 h-5 md:w-6 md:h-6 font-bold flex items-center justify-center hover:bg-green-200">+</button></div></td>
-                    <td class="p-3 border-b dark:border-gray-700 font-bold text-center text-red-500">${totalErrors}</td>
+                    <td class="p-2 border-b text-center"><div class="error-cell"><button data-id="${emp.id}" data-type="correctPicks" class="minus-error-btn bg-red-100 text-red-600 rounded-full w-5 h-5 md:w-6 md:h-6 font-bold flex items-center justify-center hover:bg-red-200">-</button><span class="font-bold text-base md:text-lg w-6 md:w-8 text-center">${correctPicks}</span><button data-id="${emp.id}" data-type="correctPicks" class="add-error-btn bg-green-100 text-green-600 rounded-full w-5 h-5 md:w-6 md:h-6 font-bold flex items-center justify-center hover:bg-green-200">+</button></div></td>
+                    <td class="p-3 border-b font-bold text-center text-red-500">${totalErrors}</td>
                 `;
                 tbody.appendChild(row);
             });
@@ -890,27 +960,27 @@
 
             employees.forEach(emp => {
                 const card = document.createElement('div');
-                card.className = 'bg-white dark:bg-gray-800 rounded-xl shadow p-4 flex flex-col space-y-3';
+                card.className = 'bg-white rounded-xl shadow p-4 flex flex-col space-y-3';
                 let totalErrors = 0;
                 let errorRows = '';
 
                 errorTypes.forEach(type => {
                     const count = emp.errors[type.key]?.value || 0;
                     if(type.key !== 'correctPicks') totalErrors += count;
-                    errorRows += `<div class="flex justify-between items-center"><span class="text-sm font-medium text-gray-700 dark:text-gray-300">${type.name}</span><div class="error-cell"><button data-id="${emp.id}" data-type="${type.key}" class="minus-error-btn bg-red-100 text-red-600 rounded-full w-5 h-5 md:w-6 md:h-6 font-bold flex items-center justify-center hover:bg-red-200">-</button><span class="font-bold text-base md:text-lg w-6 md:w-8 text-center">${count}</span><button data-id="${emp.id}" data-type="${type.key}" class="add-error-btn bg-green-100 text-green-600 rounded-full w-5 h-5 md:w-6 md:h-6 font-bold flex items-center justify-center hover:bg-green-200">+</button></div></div>`;
+                    errorRows += `<div class="flex justify-between items-center"><span class="text-sm font-medium text-gray-700">${type.name}</span><div class="error-cell"><button data-id="${emp.id}" data-type="${type.key}" class="minus-error-btn bg-red-100 text-red-600 rounded-full w-5 h-5 md:w-6 md:h-6 font-bold flex items-center justify-center hover:bg-red-200">-</button><span class="font-bold text-base md:text-lg w-6 md:w-8 text-center">${count}</span><button data-id="${emp.id}" data-type="${type.key}" class="add-error-btn bg-green-100 text-green-600 rounded-full w-5 h-5 md:w-6 md:h-6 font-bold flex items-center justify-center hover:bg-green-200">+</button></div></div>`;
                 });
 
                 const correctPicks = emp.errors.correctPicks?.value || 0;
-                const correctPicksRow = `<div class="flex justify-between items-center"><span class="text-sm font-medium text-green-600 dark:text-green-400">จัดถูก</span><div class="error-cell"><button data-id="${emp.id}" data-type="correctPicks" class="minus-error-btn bg-red-100 text-red-600 rounded-full w-5 h-5 md:w-6 md:h-6 font-bold flex items-center justify-center hover:bg-red-200">-</button><span class="font-bold text-base md:text-lg w-6 md:w-8 text-center">${correctPicks}</span><button data-id="${emp.id}" data-type="correctPicks" class="add-error-btn bg-green-100 text-green-600 rounded-full w-5 h-5 md:w-6 md:h-6 font-bold flex items-center justify-center hover:bg-green-200">+</button></div></div>`;
+                const correctPicksRow = `<div class="flex justify-between items-center"><span class="text-sm font-medium text-green-600">จัดถูก</span><div class="error-cell"><button data-id="${emp.id}" data-type="correctPicks" class="minus-error-btn bg-red-100 text-red-600 rounded-full w-5 h-5 md:w-6 md:h-6 font-bold flex items-center justify-center hover:bg-red-200">-</button><span class="font-bold text-base md:text-lg w-6 md:w-8 text-center">${correctPicks}</span><button data-id="${emp.id}" data-type="correctPicks" class="add-error-btn bg-green-100 text-green-600 rounded-full w-5 h-5 md:w-6 md:h-6 font-bold flex items-center justify-center hover:bg-green-200">+</button></div></div>`;
 
                 card.innerHTML = `
                     <div>
                         <div class="flex justify-between items-baseline">
-                            <h3 class="font-bold text-gray-800 dark:text-gray-100">${emp.name}</h3>
+                            <h3 class="font-bold text-gray-800">${emp.name}</h3>
                             <p class="text-sm">รวมผิด: <span class="font-bold text-red-500 text-lg">${totalErrors}</span></p>
                         </div>
                     </div>
-                    <div class="space-y-2 border-t dark:border-gray-700 pt-3">${errorRows}${correctPicksRow}</div>
+                    <div class="space-y-2 border-t pt-3">${errorRows}${correctPicksRow}</div>
                 `;
                 container.appendChild(card);
             });
@@ -951,14 +1021,14 @@
             employeeMetrics.forEach((emp, index) => {
                 const row = document.createElement('tr');
                 const rank = index + 1;
-                row.className = 'hover:bg-gray-50 dark:hover:bg-gray-700';
+                row.className = 'hover:bg-gray-50';
                 row.innerHTML = `
-                    <td class="p-3 border-b dark:border-gray-700 font-medium">${emp.name}</td>
-                    <td class="p-3 border-b dark:border-gray-700 text-center font-bold text-red-500">${emp.totalErrors}</td>
-                    <td class="p-3 border-b dark:border-gray-700 text-center">${emp.pps}%</td>
-                    <td class="p-3 border-b dark:border-gray-700 text-center font-bold">${rank}</td>
-                    <td class="p-3 border-b dark:border-gray-700 text-center">${emp.mostFrequentError.name}</td>
-                    <td class="p-3 border-b dark:border-gray-700 text-center">
+                    <td class="p-3 border-b font-medium">${emp.name}</td>
+                    <td class="p-3 border-b text-center font-bold text-red-500">${emp.totalErrors}</td>
+                    <td class="p-3 border-b text-center">${emp.pps}%</td>
+                    <td class="p-3 border-b text-center font-bold">${rank}</td>
+                    <td class="p-3 border-b text-center">${emp.mostFrequentError.name}</td>
+                    <td class="p-3 border-b text-center">
                         <button class="view-details-btn bg-indigo-100 text-indigo-700 text-xs py-1 px-3 rounded-full hover:bg-indigo-200" data-id="${emp.id}">รายละเอียด</button>
                     </td>
                 `;
@@ -985,12 +1055,12 @@
                  const user = doc.data();
                  const row = document.createElement('tr');
                  row.innerHTML = `
-                    <td class="p-3 border-b dark:border-gray-700">${user.name}</td>
-                    <td class="p-3 border-b dark:border-gray-700">${user.email}</td>
-                    <td class="p-3 border-b dark:border-gray-700">${user.role}</td>
-                    <td class="p-3 border-b dark:border-gray-700"><span class="approval-badge approval-pending">รออนุมัติ</span></td>
-                    <td class="p-3 border-b dark:border-gray-700">${new Date(user.createdAt.toDate()).toLocaleDateString()}</td>
-                    <td class="p-3 border-b dark:border-gray-700 text-center">
+                    <td class="p-3 border-b">${user.name}</td>
+                    <td class="p-3 border-b">${user.email}</td>
+                    <td class="p-3 border-b">${user.role}</td>
+                    <td class="p-3 border-b"><span class="approval-badge approval-pending">รออนุมัติ</span></td>
+                    <td class="p-3 border-b">${new Date(user.createdAt.toDate()).toLocaleDateString()}</td>
+                    <td class="p-3 border-b text-center">
                         <button class="approve-btn bg-green-500 text-white text-xs py-1 px-2 rounded hover:bg-green-600" data-id="${doc.id}" data-name="${user.name}">อนุมัติ</button>
                         <button class="reject-btn bg-red-500 text-white text-xs py-1 px-2 rounded hover:bg-red-600" data-id="${doc.id}">ปฏิเสธ</button>
                     </td>
@@ -1059,19 +1129,19 @@
             }
             logsToRender.forEach(log => {
                 const li = document.createElement('li');
-                li.className = 'p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg';
+                li.className = 'p-3 bg-gray-50 rounded-lg';
                 const logTime = log.timestamp?.toDate ? log.timestamp.toDate() : new Date();
 
                 li.innerHTML = `
                     <div class="flex items-start">
                         <div class="flex-1">
-                             <p class="font-bold text-gray-800 dark:text-gray-100">${log.userName || 'N/A'} <span class="font-normal text-gray-500 dark:text-gray-400">(${log.userRole || 'N/A'})</span></p>
-                             <p class="mt-1 text-gray-700 dark:text-gray-300">
-                                <span class="font-medium text-indigo-600 dark:text-indigo-400">${log.action}</span> ให้กับ 
+                             <p class="font-bold text-gray-800">${log.userName || 'N/A'} <span class="font-normal text-gray-500">(${log.userRole || 'N/A'})</span></p>
+                             <p class="mt-1 text-gray-700">
+                                <span class="font-medium text-indigo-600">${log.action}</span> ให้กับ 
                                 <span class="font-medium">${log.employeeName}</span> 
                                 (ค่าใหม่: <span class="font-bold text-red-500">${log.newValue}</span>)
                             </p>
-                             <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">${logTime.toLocaleString('th-TH')}</p>
+                             <p class="text-xs text-gray-500 mt-1">${logTime.toLocaleString('th-TH')}</p>
                         </div>
                     </div>
                 `;
@@ -1098,12 +1168,12 @@
 
                     const row = document.createElement('tr');
                     row.innerHTML = `
-                        <td class="p-3 border-b dark:border-gray-700">${user.name}</td>
-                        <td class="p-3 border-b dark:border-gray-700">${user.email}</td>
-                        <td class="p-3 border-b dark:border-gray-700 text-center">${user.role}</td>
-                        <td class="p-3 border-b dark:border-gray-700 text-center">${user.status}</td>
-                        <td class="p-3 border-b dark:border-gray-700 text-center">${totalErrors}</td>
-                        <td class="p-3 border-b dark:border-gray-700 text-center">
+                        <td class="p-3 border-b">${user.name}</td>
+                        <td class="p-3 border-b">${user.email}</td>
+                        <td class="p-3 border-b text-center">${user.role}</td>
+                        <td class="p-3 border-b text-center">${user.status}</td>
+                        <td class="p-3 border-b text-center">${totalErrors}</td>
+                        <td class="p-3 border-b text-center">
                              <button class="edit-employee-btn bg-blue-100 text-blue-700 text-xs py-1 px-3 rounded-full hover:bg-blue-200" data-id="${user.id}" data-name="${user.name}" data-role="${user.role}">แก้ไข</button>
                         </td>
                     `;
@@ -1155,10 +1225,34 @@
                     <div class="calendar-day-header">${i}</div>
                     <div class="calendar-day-body">${errorCount > 0 ? errorCount : ''}</div>
                 `;
+                dayEl.dataset.date = dateStr;
+                dayEl.addEventListener('click', (e) => showCalendarDayDetails(e.currentTarget.dataset.date));
                 calendarGrid.appendChild(dayEl);
             }
         }
         
+        function showCalendarDayDetails(dateStr) {
+            const modal = document.getElementById('calendar-detail-modal');
+            const titleEl = document.getElementById('calendar-modal-title');
+            const logListEl = document.getElementById('calendar-modal-log-list');
+
+            const date = new Date(dateStr + 'T00:00:00'); // Ensure correct date parsing
+            titleEl.textContent = `รายละเอียดวันที่ ${date.toLocaleDateString('th-TH', { day: 'numeric', month: 'long', year: 'numeric' })}`;
+
+            const startOfDay = new Date(dateStr);
+            startOfDay.setHours(0, 0, 0, 0);
+            const endOfDay = new Date(dateStr);
+            endOfDay.setHours(23, 59, 59, 999);
+            
+            const dayLogs = logs.filter(log => {
+                const logDate = log.timestamp.toDate();
+                return logDate >= startOfDay && logDate <= endOfDay;
+            });
+            
+            renderLogList(logListEl, dayLogs);
+            modal.classList.remove('hidden');
+        }
+
         async function getAiAnalysisFromGemini(employeeData, apiKey) {
             const simplifiedData = employeeData.map(emp => {
                 const errors = {};
@@ -1216,7 +1310,7 @@ ${JSON.stringify(simplifiedData, null, 2)}
             const apiKey = localStorage.getItem('geminiApiKey') || userProvidedApiKey;
             
             if (!apiKey) {
-                container.innerHTML = `<div class="text-center p-8 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg"><i class="fas fa-key text-4xl text-yellow-500 mb-4"></i><h3 class="font-bold text-lg">ต้องการ API Key</h3><p class="text-gray-600 dark:text-gray-400 mt-2">กรุณาไปที่เมนู 'ตั้งค่า' เพื่อเพิ่ม Gemini API Key ของคุณ</p></div>`;
+                container.innerHTML = `<div class="text-center p-8 bg-yellow-50 rounded-lg"><i class="fas fa-key text-4xl text-yellow-500 mb-4"></i><h3 class="font-bold text-lg">ต้องการ API Key</h3><p class="text-gray-600 mt-2">กรุณาไปที่เมนู 'ตั้งค่า' เพื่อเพิ่ม Gemini API Key ของคุณ</p></div>`;
                 return;
             }
 
@@ -1231,9 +1325,9 @@ ${JSON.stringify(simplifiedData, null, 2)}
                     .replace(/\* ([^*]+)/g, '<li class="ml-5 list-disc">$1</li>')
                     .replace(/\n/g, '<br>');
 
-                container.innerHTML = `<div class="prose dark:prose-invert max-w-none">${htmlContent}</div>`;
+                container.innerHTML = `<div class="prose max-w-none">${htmlContent}</div>`;
             } catch (error) {
-                container.innerHTML = `<div class="text-center p-8 bg-red-50 dark:bg-red-900/20 rounded-lg"><i class="fas fa-exclamation-triangle text-4xl text-red-500 mb-4"></i><h3 class="font-bold text-lg">เกิดข้อผิดพลาด</h3><p class="text-gray-600 dark:text-gray-400 mt-2">ไม่สามารถวิเคราะห์ข้อมูลได้: ${error.message}</p><p class="text-xs text-gray-500 mt-2">โปรดตรวจสอบ API Key ในหน้าตั้งค่า หรือลองอีกครั้งในภายหลัง</p></div>`;
+                container.innerHTML = `<div class="text-center p-8 bg-red-50 rounded-lg"><i class="fas fa-exclamation-triangle text-4xl text-red-500 mb-4"></i><h3 class="font-bold text-lg">เกิดข้อผิดพลาด</h3><p class="text-gray-600 mt-2">ไม่สามารถวิเคราะห์ข้อมูลได้: ${error.message}</p><p class="text-xs text-gray-500 mt-2">โปรดตรวจสอบ API Key ในหน้าตั้งค่า หรือลองอีกครั้งในภายหลัง</p></div>`;
             }
         }
         
@@ -1286,9 +1380,86 @@ ${JSON.stringify(simplifiedData, null, 2)}
             showToast('ส่งออกรายงานสำเร็จ', 'success');
         }
 
+        function renderAnnouncementsView() {
+            const container = document.getElementById('announcements-list');
+            const createBtn = document.getElementById('create-announcement-btn');
+            container.innerHTML = '';
+
+            if (['SUPERVISOR', 'ADMIN'].includes(currentUser.role)) {
+                createBtn.classList.remove('hidden');
+            } else {
+                createBtn.classList.add('hidden');
+            }
+
+            if(announcements.length === 0) {
+                 container.innerHTML = `<div class="text-center p-8 text-gray-500">ยังไม่มีประกาศ</div>`;
+                 return;
+            }
+
+            announcements.forEach(ann => {
+                const card = document.createElement('div');
+                card.className = 'bg-white p-4 rounded-lg shadow';
+                const postDate = ann.timestamp?.toDate ? ann.timestamp.toDate() : new Date();
+                card.innerHTML = `
+                    <h3 class="font-bold text-lg text-indigo-700">${ann.title}</h3>
+                    <p class="text-xs text-gray-500 mb-2">ประกาศโดย: ${ann.authorName} (${ann.authorRole}) - ${postDate.toLocaleString('th-TH')}</p>
+                    <p class="text-gray-700 whitespace-pre-wrap">${ann.content}</p>
+                `;
+                container.appendChild(card);
+            });
+        }
+        
+        async function postNewAnnouncement() {
+            const title = document.getElementById('announcement-title').value;
+            const content = document.getElementById('announcement-content').value;
+
+            if(!title || !content) {
+                showToast('กรุณากรอกข้อมูลให้ครบถ้วน', 'error');
+                return;
+            }
+
+            const newAnnouncement = {
+                title,
+                content,
+                authorName: currentUser.name,
+                authorRole: currentUser.role,
+                timestamp: firebase.firestore.FieldValue.serverTimestamp()
+            };
+
+            try {
+                await db.collection(`artifacts/${appId}/public/data/announcements`).add(newAnnouncement);
+                announcements.unshift({ ...newAnnouncement, timestamp: new Date() });
+                renderAnnouncementsView();
+                document.getElementById('announcement-modal').classList.add('hidden');
+                document.getElementById('announcement-title').value = '';
+                document.getElementById('announcement-content').value = '';
+                showToast('ประกาศสำเร็จ', 'success');
+            } catch(e) {
+                showToast('เกิดข้อผิดพลาดในการประกาศ', 'error');
+                console.error(e);
+            }
+        }
+        
+        function renderLatestAnnouncementOnDashboard() {
+            const container = document.getElementById('latest-announcement-banner');
+            container.innerHTML = '';
+            if (announcements.length > 0) {
+                const latest = announcements[0];
+                container.innerHTML = `
+                    <div class="bg-indigo-50 border-l-4 border-indigo-500 p-4 rounded-r-lg">
+                        <div class="flex items-center">
+                            <i class="fas fa-bullhorn text-indigo-500 mr-3"></i>
+                            <div>
+                                <p class="font-bold text-indigo-800">${latest.title}</p>
+                                <p class="text-sm text-indigo-700">${latest.content.substring(0, 100)}...</p>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+        }
 
     </script>
 </body>
 </html>
-
 
