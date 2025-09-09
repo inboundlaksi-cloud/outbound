@@ -12,6 +12,7 @@
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-storage-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-analytics-compat.js"></script>
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -262,9 +263,12 @@
                 </div>
                 <h2 class="text-lg font-bold text-gray-800">ระบบบันทึกสถิติ</h2>
             </div>
-            <div id="user-profile-summary" class="p-4 border-b">
-                <p id="user-id-display" class="text-sm font-medium text-gray-800 truncate"></p>
-                <p id="user-role-display" class="text-xs text-indigo-600 font-semibold"></p>
+            <div id="user-profile-summary" class="p-4 border-b flex items-center gap-3">
+                 <img id="sidebar-profile-img" src="https://placehold.co/40x40/E0E7FF/4F46E5?text=User" class="w-10 h-10 rounded-full object-cover">
+                 <div>
+                    <p id="user-id-display" class="text-sm font-medium text-gray-800 truncate"></p>
+                    <p id="user-role-display" class="text-xs text-indigo-600 font-semibold"></p>
+                 </div>
             </div>
             <nav id="main-nav" class="flex-grow p-4 space-y-1"></nav>
             <div class="p-4 border-t space-y-2">
@@ -360,7 +364,10 @@
                 </section>
 
                 <section id="detail-view" class="main-section hidden">
-                     <h2 id="detail-employee-name" class="text-2xl md:text-3xl font-bold mb-6"></h2>
+                     <div class="flex items-center gap-4 mb-6">
+                        <img id="detail-employee-img" src="https://placehold.co/64x64/E0E7FF/4F46E5?text=Emp" class="w-16 h-16 rounded-full object-cover shadow-md">
+                        <h2 id="detail-employee-name" class="text-2xl md:text-3xl font-bold"></h2>
+                     </div>
                      <div class="detail-view-container grid grid-cols-1 lg:grid-cols-2 gap-6">
                          <div class="bg-white p-6 rounded-xl shadow-lg"><h3 class="text-xl font-bold mb-4">สรุปสถิติ</h3><div class="space-y-2"><p><span class="font-semibold">ความผิดพลาดทั้งหมด:</span> <span id="summary-total-errors" class="font-bold text-red-500"></span></p><p><span class="font-semibold">จัดถูกต้อง:</span> <span id="summary-correct-picks" class="font-bold text-green-500"></span></p><p><span class="font-semibold">อัตราความผิดพลาด:</span> <span id="summary-pps" class="font-bold text-purple-600"></span></p><p><span class="font-semibold">ประเภทผิดพลาดสูงสุด:</span> <span id="summary-most-frequent" class="font-bold text-purple-600"></span></p></div></div>
                          <div class="bg-white p-6 rounded-xl shadow-lg"><h3 class="text-xl font-bold mb-4">สัดส่วนความผิดพลาด</h3><div class="chart-container h-64"><canvas id="errorBreakdownChart"></canvas></div></div>
@@ -382,7 +389,13 @@
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                             <div>
                                 <div class="flex items-center mb-4">
-                                    <div class="bg-indigo-100 w-20 h-20 rounded-full flex items-center justify-center mr-4"><i class="fas fa-user text-indigo-600 text-3xl"></i></div>
+                                     <div class="relative w-24 h-24 mr-4">
+                                        <img id="profile-picture-img" src="https://placehold.co/96x96/E0E7FF/4F46E5?text=Profile" class="w-24 h-24 rounded-full object-cover">
+                                        <label for="profile-picture-input" class="absolute bottom-0 right-0 bg-indigo-600 text-white rounded-full p-1 cursor-pointer hover:bg-indigo-700">
+                                            <i class="fas fa-camera text-xs"></i>
+                                        </label>
+                                        <input type="file" id="profile-picture-input" class="hidden" accept="image/*">
+                                    </div>
                                     <div>
                                         <h3 id="profile-name" class="text-2xl font-bold"></h3>
                                         <p id="profile-email" class="text-sm text-gray-600"></p>
@@ -488,6 +501,7 @@
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
         const db = firebase.firestore();
+        const storage = firebase.storage();
         const appId = firebaseConfig.projectId;
         
         // --- Global State ---
@@ -809,7 +823,8 @@
             
             document.getElementById('user-id-display').textContent = currentUser.name;
             document.getElementById('user-role-display').textContent = currentUser.role;
-            
+            document.getElementById('sidebar-profile-img').src = currentUser.photoURL || 'https://placehold.co/40x40/E0E7FF/4F46E5?text=User';
+
             renderNavigation();
             initializeData().then(() => {
                 toggleView('dashboard');
@@ -892,6 +907,9 @@
             document.getElementById('create-announcement-btn').addEventListener('click', () => document.getElementById('announcement-modal').classList.remove('hidden'));
             document.getElementById('cancel-announcement-btn').addEventListener('click', () => document.getElementById('announcement-modal').classList.add('hidden'));
             document.getElementById('post-announcement-btn').addEventListener('click', postNewAnnouncement);
+            
+            // Profile Picture
+            document.getElementById('profile-picture-input').addEventListener('change', handleProfilePictureUpload);
         });
         
         function renderDailyTable() {
@@ -1099,6 +1117,8 @@
             document.getElementById('profile-email').textContent = currentUser.email;
             document.getElementById('profile-role').textContent = currentUser.role;
             document.getElementById('profile-name-input').value = currentUser.name;
+            document.getElementById('profile-picture-img').src = currentUser.photoURL || 'https://placehold.co/96x96/E0E7FF/4F46E5?text=Profile';
+
 
             const myLogs = logs.filter(log => log.userName === currentUser.name);
             renderLogList(document.getElementById('profile-log-list'), myLogs);
@@ -1168,7 +1188,10 @@
 
                     const row = document.createElement('tr');
                     row.innerHTML = `
-                        <td class="p-3 border-b">${user.name}</td>
+                        <td class="p-3 border-b flex items-center gap-2">
+                            <img src="${user.photoURL || 'https://placehold.co/32x32/E0E7FF/4F46E5?text=?'}" class="w-8 h-8 rounded-full object-cover">
+                            ${user.name}
+                        </td>
                         <td class="p-3 border-b">${user.email}</td>
                         <td class="p-3 border-b text-center">${user.role}</td>
                         <td class="p-3 border-b text-center">${user.status}</td>
@@ -1340,7 +1363,8 @@ ${JSON.stringify(simplifiedData, null, 2)}
              const employee = employees.find(emp => emp.id === employeeId);
              if (!employee) return;
 
-             document.getElementById('detail-employee-name').textContent = `รายละเอียด: ${employee.name}`;
+             document.getElementById('detail-employee-name').textContent = employee.name;
+             document.getElementById('detail-employee-img').src = employee.photoURL || 'https://placehold.co/64x64/E0E7FF/4F46E5?text=Emp';
              const totalErrors = Object.keys(employee.errors).reduce((sum, key) => key !== 'correctPicks' ? sum + (employee.errors[key]?.value || 0) : sum, 0);
              document.getElementById('summary-total-errors').textContent = totalErrors;
              document.getElementById('summary-correct-picks').textContent = employee.errors.correctPicks?.value || 0;
@@ -1457,6 +1481,35 @@ ${JSON.stringify(simplifiedData, null, 2)}
                     </div>
                 `;
             }
+        }
+
+        async function handleProfilePictureUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            showToast('กำลังอัปโหลดรูปภาพ...', 'info');
+            try {
+                const storageRef = storage.ref(`profile_pictures/${currentUser.uid}`);
+                const uploadTask = await storageRef.put(file);
+                const downloadURL = await uploadTask.ref.getDownloadURL();
+
+                await db.collection(`artifacts/${appId}/public/data/users`).doc(currentUser.uid).update({
+                    photoURL: downloadURL
+                });
+
+                currentUser.photoURL = downloadURL;
+                sessionStorage.setItem('loggedInUser', JSON.stringify(currentUser));
+                
+                document.getElementById('profile-picture-img').src = downloadURL;
+                document.getElementById('sidebar-profile-img').src = downloadURL;
+
+                showToast('อัปเดตรูปโปรไฟล์สำเร็จ', 'success');
+
+            } catch(error) {
+                console.error("Error uploading profile picture:", error);
+                showToast('อัปโหลดรูปโปรไฟล์ล้มเหลว', 'error');
+            }
+
         }
 
     </script>
